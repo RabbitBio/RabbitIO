@@ -1,4 +1,6 @@
-# RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
+![RabbitIO](rabbitio.png)
+
+RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
 
 ## TODO
 - [ ] Add thread pool
