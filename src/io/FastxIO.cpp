@@ -12,7 +12,8 @@
 #include <map>
 #include <cstdio>
 
-#include "../Sketch.h"
+//#include "../Sketch.h"
+#include "Reference.h"
 #include "FastxIO.h"
 #include "Buffer.h"
 #include "FastxStream.h" 
@@ -125,14 +126,14 @@ string getLine(FastaDataChunk * &chunk, uint64 &pos)
 	return "";
 }
 
-int chunkFormat(FastaChunk & fachunk, vector<Sketch::Reference> & refs)
+int chunkFormat(FastaChunk & fachunk, vector<Reference> & refs)
 {
 	uint64 pos = 0;
 	bool done = false;
 	//cerr << "into chunkFormat" << endl;
 	while(true){
 	
-		Sketch::Reference ref = getNextSeq(fachunk, done, pos);
+		Reference ref = getNextSeq(fachunk, done, pos);
 		if(done) break;
 		refs.push_back(ref);
 	}
@@ -144,7 +145,7 @@ int chunkFormat(FastaChunk & fachunk, vector<Sketch::Reference> & refs)
 }
 
 //design to filter out kmer apps
-int chunkFormat(FastaChunk & fachunk, vector<Sketch::Reference> & refs, int kmerSize)
+int chunkFormat(FastaChunk & fachunk, vector<Reference> & refs, int kmerSize)
 {
 	uint64 pos = 0;
 	bool done = false;
@@ -152,7 +153,7 @@ int chunkFormat(FastaChunk & fachunk, vector<Sketch::Reference> & refs, int kmer
 	uint64 short_count = 0; //counter for seqs shorter than kmer
 	while(true){
 	
-		Sketch::Reference ref = getNextSeq(fachunk, done, pos);
+		Reference ref = getNextSeq(fachunk, done, pos);
 		if(done) break;
 		if(ref.seq.length() < kmerSize)
 			short_count++;
@@ -166,9 +167,9 @@ int chunkFormat(FastaChunk & fachunk, vector<Sketch::Reference> & refs, int kmer
 	
 }
 
-Sketch::Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos)
+Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos)
 {
-	Sketch::Reference ref;
+	Reference ref;
 	if(pos >= fachunk.chunk->size - 1){
 		done = true;
 		return ref;
@@ -261,13 +262,13 @@ FastqDataChunk* FastqReader::readNextChunk(){
 //		return NULL;
 //	}
 //}
-int chunkFormat(FastqChunk* &fqChunk, std::vector<Sketch::Reference> &data, bool mHasQuality = true){
+int chunkFormat(FastqChunk* &fqChunk, std::vector<Reference> &data, bool mHasQuality = true){
 	//format a whole chunk and return number of reads
 	FastqDataChunk * chunk = fqChunk->chunk;
 	int seq_count = 0;
 	int line_count = 0;
 	int pos_ = 0;
-	Sketch::Reference ref;
+	Reference ref;
 
 	while(true){
 		string name = getLine(chunk, pos_);

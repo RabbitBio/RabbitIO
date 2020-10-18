@@ -10,9 +10,10 @@
 */
  
 #include "FastxStream.h"
-#include "../Sketch.h"
+//#include "../Sketch.h"
 #include <iostream>
 #include <string>
+#include "Reference.h"
 
 namespace mash
 {
@@ -136,7 +137,10 @@ uint64 FastaFileReader::FindCutPos(FastaChunk* dataChunk_, uchar* data_, const u
 	uint64 lastSeq_ = 0; //-> the start of last sequences content
 	uint64 lastName_ = 0; //-> the last '>'
 	OneSeqInfo seqInfo;
-
+	/*
+	[haoz:] dataChunk_ -> start和dataChunk_ -> end 是表示当前这个chunk的开始部分的序列的index和
+			最终部分序列的index
+	*/
 	if(data_[0] == '>') //start with '>'
 	{
 		dataChunk_->start = this->totalSeqs;	

@@ -11,7 +11,7 @@
 #ifndef H_FASTQSTREAM
 #define H_FASTQSTREAM
 
-#include "../Sketch.h"
+//#include "../Sketch.h"
 
 #include "Globals.h"
 
@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <zlib.h> //support gziped files, functional but inefficient
+#include "Reference.h"
 
 
 #if defined (_WIN32)

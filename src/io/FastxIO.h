@@ -20,7 +20,8 @@
 #include "FastxStream.h"
 #include "FastxChunk.h"
 //#include "Sequence.h"
-#include "../Sketch.h"
+//#include "../Sketch.h"
+#include "Reference.h"
 
 namespace mash
 {
@@ -61,9 +62,9 @@ private:
 
 std::string getSequence(FastaDataChunk* &chunk, uint64 &pos);	//addbyxxm
 std::string getLine(FastaDataChunk* &chunk, uint64 &pos);
-int chunkFormat(FastaChunk & fachunk, std::vector<Sketch::Reference> & refs);
-int chunkFormat(FastaChunk & fachunk, std::vector<Sketch::Reference> & refs, int kmerSize);
-Sketch::Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos);
+int chunkFormat(FastaChunk & fachunk, std::vector<Reference> & refs);
+int chunkFormat(FastaChunk & fachunk, std::vector<Reference> & refs, int kmerSize);
+Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos);
 
 } // namespace fa
 
@@ -102,7 +103,7 @@ private:
 	uint32 numParts;
 };
 
-int chunkFormat(FastqChunk* &chunk, std::vector< Sketch::Reference > &,bool);
+int chunkFormat(FastqChunk* &chunk, std::vector<Reference> &,bool);
 
 //single pe file 
 //int pairedChunkFormat(FastqDataChunk* &chunk, std::vector<ReadPair*>&,bool mHasQuality);
