@@ -206,6 +206,8 @@ Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos)
 
 namespace fq
 {
+
+/*
 void FastqReader::readChunk()
 {
 	FastqDataChunk* part = NULL;
@@ -245,6 +247,7 @@ FastqDataChunk* FastqReader::readNextChunk(){
 		return NULL;
 	}
 }
+*/
 //FastqDataChunk* FastqReader::readNextPairedChunk(){
 //	FastqDataChunk* part = NULL;
 //	recordsPool.Acquire(part);

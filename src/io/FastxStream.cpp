@@ -214,6 +214,44 @@ uint64 FastaFileReader::FindCutPos(FastaChunk* dataChunk_, uchar* data_, const u
 namespace fq
 {
 
+void FastqFileReader::readChunk()
+{
+	FastqDataChunk* part = NULL;
+
+	recordsPool.Acquire(part);
+	printf("fastqio: ready to into while\n");
+
+	//while (!errorHandler.IsError() && fileReader.ReadNextChunk(part))
+	while(ReadNextChunk(part))
+	{
+		ASSERT(part->size > 0);
+
+		//recordsQueue.Push(numParts, part); //[haoz:] Push:把<numparts, part>组成pair然后放到recordsQueue里面然后notifiy_one
+		printf("numParts is %d\n", numParts);
+		numParts++;
+
+		recordsPool.Release(part);	
+		recordsPool.Acquire(part);
+	}
+
+	ASSERT(part->size == 0);
+	recordsPool.Release(part);		// the last empty part
+
+	//recordsQueue.SetCompleted();
+}
+FastqDataChunk* FastqFileReader::readNextChunk(){
+	FastqDataChunk* part = NULL;
+	recordsPool.Acquire(part);
+	if(ReadNextChunk(part))
+	{
+		return part;
+	}
+	else
+	{
+		recordsPool.Release(part);
+		return NULL;
+	}
+}
 //bool IFastqStreamReader::ReadNextChunk(FastqDataChunk* chunk_)
 bool FastqFileReader::ReadNextChunk(FastqDataChunk* chunk_)
 {

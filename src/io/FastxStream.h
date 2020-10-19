@@ -291,12 +291,14 @@ private:
 	static const uint32 SwapBufferSize = 1 << 20; // the longest FASTQ sequence todate is no longer than 1Mbp. 
 
 public:
-	FastqFileReader(const std::string& fileName_, bool isZippedNew = false)
+	FastqFileReader(const std::string& fileName_, FastqDataPool& pool_, bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
 		,	usesCrlf(false)
 		,	isZipped(isZippedNew)
+		,	numParts(0)
+		,	recordsPool(pool_)
 	{	
 		//if(ends_with(fileName_,".gz"))
 		if(isZipped){
@@ -317,12 +319,14 @@ public:
 			
 	}
 
-	FastqFileReader(int fd, bool isZippedNew = false)
+	FastqFileReader(int fd, FastqDataPool& pool_, bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
 		,	usesCrlf(false)
 		,	isZipped(isZippedNew)
+		,	numParts(0)
+		,	recordsPool(pool_)
 	{	
 		//if(ends_with(fileName_,".gz"))
 		if(isZipped){
@@ -360,6 +364,9 @@ public:
 		return eof;
 	}
 
+	//added from fastxIO.h
+	FastqDataChunk* readNextChunk();
+	void readChunk();
 	bool ReadNextChunk(FastqDataChunk* chunk_);
 	bool ReadNextPairedChunk(FastqDataChunk* chunk_);
 	void Close()
@@ -397,6 +404,10 @@ private:
 	bool			isZipped;
 	FILE*           mFile = NULL;
 	gzFile          mZipFile = NULL;
+
+	//added from fastxIO.h 
+	FastqDataPool& recordsPool;
+	uint32 numParts;
 
 	uint64 lastOneReadPos;
 	uint64 lastTwoReadPos;

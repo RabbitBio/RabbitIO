@@ -75,7 +75,7 @@ namespace fq
 //typedef core::TDataQueue<FastqDataChunk> FastqDataQueue;
 //typedef core::TDataPool<FastqDataChunk> FastqDataPool;
 
-
+/*
 class FastqReader //: public IFastqIoOperator
 {
 public:
@@ -102,6 +102,7 @@ private:
 	FastqFileReader&	fileReader;
 	uint32 numParts;
 };
+*/ 
 
 int chunkFormat(FastqChunk* &chunk, std::vector<Reference> &,bool);
 
