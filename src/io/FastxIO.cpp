@@ -27,7 +27,7 @@ namespace mash
 
 namespace fa
 {
-
+/*
 FastaChunk* FastaReader::readNextChunk(){
 	FastaDataChunk* part = NULL;
 	recordsPool.Acquire(part);
@@ -43,6 +43,7 @@ FastaChunk* FastaReader::readNextChunk(){
 		return NULL;
 	}
 }
+*/
 
 //int chunkFormat(FastaDataChunk* &chunk, std::vector<Sequence*> &data, bool mHasQuality){
 //	//format a whole chunk and return number of reads

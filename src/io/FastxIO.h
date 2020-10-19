@@ -29,7 +29,7 @@ namespace mash
 namespace fa
 {
 
-
+/*
 class FastaReader
 {
 public:
@@ -56,7 +56,7 @@ private:
 	FastaFileReader&	fileReader;
 	uint32 numParts;
 };
-
+*/
 //int chunkFormat(FastaDataChunk* &chunk, std::vector<Sequence*>&, bool);
 
 

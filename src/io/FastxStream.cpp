@@ -21,6 +21,22 @@ namespace mash
 namespace fa
 {
 
+FastaChunk* FastaFileReader::readNextChunk(){
+	FastaDataChunk* part = NULL;
+	recordsPool.Acquire(part);
+	FastaChunk *dataPart = new FastaChunk;
+	dataPart->chunk = part;
+	if(ReadNextChunk(dataPart, this->seqInfos))
+	{
+		return dataPart;
+	}
+	else
+	{
+		recordsPool.Release(part);
+		return NULL;
+	}
+}
+
 bool FastaFileReader::ReadNextChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos)
 {
 	//std::cout << "==================Next Chunk =========================" << std::endl;

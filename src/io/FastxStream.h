@@ -71,9 +71,11 @@ private:
 	//static const uint32 SwapBufferSize = 1 << 20;
 	static const uint32 SwapBufferSize = 1 << 26;//16MB
 	//static const uint32 SwapBufferSize = 1 << 13;
+	//added from fastaReader
+	FastaDataPool& recordsPool;
 
 public:
-	FastaFileReader(const std::string& fileName_, uint64 halo = 21, bool isZippedNew = false)
+	FastaFileReader(const std::string& fileName_, FastaDataPool& pool_, uint64 halo = 21, bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
@@ -81,6 +83,7 @@ public:
 		,	totalSeqs(0)
 		,	mHalo(halo)
 		,	isZipped(isZippedNew)
+		,	recordsPool(pool_)
 	{	
 		//if(ends_with(fileName_,".gz"))
 		if(isZipped)
@@ -100,7 +103,7 @@ public:
 			
 	}
 
-	FastaFileReader(int fd, uint64 halo = 21, bool isZippedNew = false)
+	FastaFileReader(int fd, FastaDataPool& pool_, uint64 halo = 21, bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
 		,	bufferSize(0)
 		,	eof(false)
@@ -108,6 +111,7 @@ public:
 		,	totalSeqs(0)
 		,	mHalo(halo)
 		,	isZipped(isZippedNew)
+		,	recordsPool(pool_)
 	{	
 		if(isZipped)
 		{
@@ -141,6 +145,7 @@ public:
 		return eof;
 	}
 
+	FastaChunk* readNextChunk();
 	bool ReadNextChunk(FastaChunk* chunk_, SeqInfos& seqInfos);
 
 	void Close()
@@ -187,6 +192,9 @@ public:
 	uint64          totalSeqs;
 	uint64			gid = 0;
 
+	//added form fastareader
+	SeqInfos seqInfos;
+	uint32 numParts;
 	//uint64 lastOneReadPos;
 	//uint64 lastTwoReadPos;
 
