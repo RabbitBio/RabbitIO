@@ -22,12 +22,49 @@ namespace fa
 {
 
 FastaChunk* FastaFileReader::readNextChunk(){
+	std::cout << "read chunk list" << std::endl;
 	FastaDataChunk* part = NULL;
 	recordsPool.Acquire(part);
 	FastaChunk *dataPart = new FastaChunk;
 	dataPart->chunk = part;
 	if(ReadNextChunk(dataPart, this->seqInfos))
 	{
+		return dataPart;
+	}
+	else
+	{
+		std::cout << "read over!" << std::endl;
+		recordsPool.Release(part);
+		return NULL;
+	}
+}
+/*
+Description:
+	this function make sure one FastaChunk(dataPart) contains at least
+	one whole sequence, because 
+*/
+FastaChunk* FastaFileReader::readNextChunkList(){
+	std::cout << "read chunk list" << std::endl;
+	FastaDataChunk* part = NULL;
+	recordsPool.Acquire(part);
+	FastaChunk *dataPart = new FastaChunk;
+	dataPart->chunk = part;
+	FastaDataChunk* currnet = NULL;
+	bool continue_read = false;
+	if(ReadNextFaChunk(dataPart, this->seqInfos, continue_read))
+	{
+		FastaDataChunk* current = part;
+		while(continue_read){
+			FastaDataChunk *append = NULL;
+			recordsPool.Acquire(append);
+			if(ReadNextFaChunk(dataPart, this->seqInfos, continue_read)){
+				current->next = append;
+				currnet = append;
+			}else{
+				recordsPool.Release(append);
+				break;
+			}
+		}
 		return dataPart;
 	}
 	else
@@ -223,6 +260,92 @@ uint64 FastaFileReader::FindCutPos(FastaChunk* dataChunk_, uchar* data_, const u
 	//if(cut_ != 0) std::cout << "cut: " << cut_ << std::endl;
 
 	return cut_ ? cut_ : size_;	
+}
+bool find_next_seq_start(uchar* data, uint64 size, uint64 &pos_){
+	if(pos_ == size - 1) return false;
+	do{
+		pos_++;
+	}while(pos_ < size && data[pos_] != '>');
+
+	return data[pos_] == '>' ? true : false;
+}
+
+bool FastaFileReader::ReadNextFaChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos, bool &continue_read){
+	FastaDataChunk *chunk_ = dataChunk_->chunk;
+	if (Eof())
+	{
+		chunk_->size = 0;
+		return false;
+	}
+
+	// flush the data from previous incomplete chunk
+	uchar* data = chunk_->data.Pointer();
+	const uint64 cbufSize = chunk_->data.Size();
+	chunk_->size = 0;
+	int64 toRead = cbufSize - bufferSize;// buffersize: size left from last chunk
+	
+	if (bufferSize > 0)
+	{
+		std::copy(swapBuffer.Pointer(), swapBuffer.Pointer() + bufferSize, data);
+		chunk_->size = bufferSize;
+		bufferSize = 0;
+	}
+
+	// read the next chunk
+	int64 r = this->Read(data + chunk_->size, toRead);
+	//std::cout << "r is :" << r << std::endl;
+	//std::cout << "toRead: " << toRead << std::endl;
+	
+	if (r > 0)
+	{
+		if (r == toRead)	// somewhere before end
+		{
+			if(data[0] == '>'){
+				uint64 chunkEnd = 0, pos_ = 0;
+				while(find_next_seq_start(data, cbufSize, pos_)){
+					chunkEnd = pos_;
+				}
+				if(chunkEnd == 0){ //means this chunk is a big one, one chunk can not contain all
+					continue_read = true;
+					chunkEnd = cbufSize;
+				}else{
+					continue_read = false;
+				}
+				chunk_->size = chunkEnd - 1;
+				if (usesCrlf)
+					chunk_->size -= 1;
+				std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
+				bufferSize = cbufSize - chunkEnd;
+			}else{ // means this is a continue chunk for last sequence 
+				uint64 chunkEnd = 0, pos_ = 0;
+				if(find_next_seq_start(data, cbufSize, pos_)){
+					chunkEnd = pos_;
+				}
+				if(chunkEnd == 0){ //means this chunk is a big one, one chunk can not contain all
+					continue_read = true;
+					chunkEnd = cbufSize;
+				}else{
+					continue_read = false;
+				}
+				chunk_->size = chunkEnd - 1;
+				if (usesCrlf)
+					chunk_->size -= 1;
+				std::copy(data + chunkEnd, data + cbufSize, swapBuffer.Pointer());
+				bufferSize = cbufSize - chunkEnd;
+			}
+		}else{ // at the end of file
+			chunk_ -> size += r - 1; //skip the last eof symbol
+			if(usesCrlf)
+				chunk_->size -= 1;
+			eof = true;
+		}
+	}
+	else
+	{
+		eof = true;
+	}
+
+	return true;
 }
 
 } // namespace fa

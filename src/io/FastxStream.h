@@ -146,7 +146,10 @@ public:
 	}
 
 	FastaChunk* readNextChunk();
+	FastaChunk* readNextChunkList();
 	bool ReadNextChunk(FastaChunk* chunk_, SeqInfos& seqInfos);
+	bool ReadNextFaChunk(FastaChunk* chunk_, SeqInfos& seqInfos);
+	bool ReadNextFaChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos, bool &continue_read);
 
 	void Close()
 	{

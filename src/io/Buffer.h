@@ -136,6 +136,7 @@ struct DataChunk
 
 	Buffer data;
 	uint64 size;
+	DataChunk *next = NULL;//[haoz:]added for all seqchunk in one part
 
 	DataChunk(const uint64 bufferSize_ = DefaultBufferSize)
 		:	data(bufferSize_)

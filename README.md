@@ -11,4 +11,7 @@ RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
 - [ ] document/manual
 - [ ] multi-decompress 
 - [ ] process sra directly?
-- [ ] delete fastqreader/fastareader class, only keep fastqFileReader 
+- [X] delete fastqreader/fastareader class, only keep fastqFileReader 
+
+## RECENT work
+- [X] Fasta dynamic parser
