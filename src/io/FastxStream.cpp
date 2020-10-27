@@ -51,13 +51,13 @@ FastaChunk* FastaFileReader::readNextChunkList(){
 	dataPart->chunk = part;
 	FastaDataChunk* currnet = NULL;
 	bool continue_read = false;
-	if(ReadNextFaChunk(dataPart, this->seqInfos, continue_read))
+	if(ReadNextFaChunk(dataPart->chunk, this->seqInfos, continue_read))
 	{
 		FastaDataChunk* current = part;
 		while(continue_read){
 			FastaDataChunk *append = NULL;
 			recordsPool.Acquire(append);
-			if(ReadNextFaChunk(dataPart, this->seqInfos, continue_read)){
+			if(ReadNextFaChunk(append, this->seqInfos, continue_read)){
 				current->next = append;
 				currnet = append;
 			}else{
@@ -270,8 +270,8 @@ bool find_next_seq_start(uchar* data, uint64 size, uint64 &pos_){
 	return data[pos_] == '>' ? true : false;
 }
 
-bool FastaFileReader::ReadNextFaChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos, bool &continue_read){
-	FastaDataChunk *chunk_ = dataChunk_->chunk;
+//bool FastaFileReader::ReadNextFaChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos, bool &continue_read){
+bool FastaFileReader::ReadNextFaChunk(FastaDataChunk* chunk_, SeqInfos& seqInfos, bool &continue_read){
 	if (Eof())
 	{
 		chunk_->size = 0;

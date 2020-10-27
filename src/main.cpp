@@ -29,6 +29,20 @@ int producer_fastq_task(std::string file){
     return 0;
 }
 
+void print_chunk(mash::fa::FastaDataChunk *chunk){
+    std::cout << "chunk size: " << chunk->size << std::endl;
+}
+void print_fachunkpart_info(mash::fa::FastaChunk *fachunk){
+    std::cout << "------------------chunk info-----------------" << std::endl;
+    print_chunk(fachunk->chunk);
+    mash::fa::FastaDataChunk *current_chunk = fachunk->chunk;
+    while(current_chunk->next != NULL){
+        std::cout << "next" << std::endl;
+        current_chunk = current_chunk->next;
+        print_chunk(current_chunk);
+    }
+}
+
 int producer_fasta_task(std::string file){
     mash::fa::FastaDataPool *fastaPool = new mash::fa::FastaDataPool();
     mash::fa::FastaFileReader *faFileReader;
@@ -39,16 +53,20 @@ int producer_fasta_task(std::string file){
     int line_sum = 0;
     while(true){
         mash::fa::FastaChunk *fachunk = new mash::fa::FastaChunk;
-        //fachunk = faFileReader->readNextChunkList();
-        fachunk = faFileReader->readNextChunk();
+        fachunk = faFileReader->readNextChunkList();
+        //fachunk = faFileReader->readNextChunk();
         if (fachunk == NULL) break;
         n_chunks++;
         //line_sum += count_line(fqchunk);
         std::vector<Reference> data;
+        print_fachunkpart_info(fachunk);
         //line_sum += mash::fa::chunkFormat(*fachunk, data);
     }
     std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
     return 0;
+
+    //result record: readnextchunklist: 2.85//3.25
+    //               readnextchunk:     2.76
 }
 int main(){
     //std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
