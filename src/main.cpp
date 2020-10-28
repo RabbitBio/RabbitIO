@@ -8,8 +8,15 @@ int count_line(mash::fq::FastqChunk* fqchunk){
     return 1000;
 }
 
-int main(){
-    std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
+int main(int argc, char ** argv){
+    //std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
+    if(argc <= 1)
+	{
+		std::cout << "Please specify filename. Example:" << std::endl;
+		std::cout << "./RabbitIO filename " << std::endl;
+		exit(0);
+	}
+	std::string file(argv[1]);
     mash::fq::FastqDataPool *fastqPool = new mash::fq::FastqDataPool();
     mash::fq::FastqFileReader *fqFileReader;
     mash::fq::FastqReader *fastqReader;
@@ -25,6 +32,7 @@ int main(){
         //line_sum += count_line(fqchunk);
         std::vector<Reference> data;
         line_sum += mash::fq::chunkFormat(fqchunk, data, true);
+		fastqPool -> Release(fqchunk->chunk);
     }
-    std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
+    std::cout << "file " << file << " has " << line_sum << " seqs" << std::endl;
 }
