@@ -23,22 +23,27 @@
 //#include "../Sketch.h"
 #include "Reference.h"
 
+/// mash namespace
 namespace mash
 {
-
+/// fasta namespace
 namespace fa
 {
 
+/// class FastaReader
 
 class FastaReader
 {
 public:
+	
+	///  constructer function
     FastaReader(FastaFileReader& reader_, FastaDataPool& pool_)
 	    :   recordsPool(pool_)
 		,	fileReader(reader_)
 		,	numParts(0)
 	{};
 
+	/// read next chunk
 	FastaChunk* readNextChunk();
 	
 	int64 Read(byte* memory_, uint64 size_)
