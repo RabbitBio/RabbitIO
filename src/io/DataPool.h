@@ -50,7 +50,7 @@ class TDataPool
 
 public:
 	volatile uint32 partNum;
-	static const uint32 DefaultMaxPartNum = 32000;
+	static const uint32 DefaultMaxPartNum = 3200;
 	static const uint32 DefaultBufferPartSize = 1 << 26;
 
 	TDataPool(uint32 maxPartNum_ = DefaultMaxPartNum, uint32 bufferPartSize_ = DefaultBufferPartSize)

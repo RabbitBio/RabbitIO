@@ -302,6 +302,7 @@ bool FastaFileReader::ReadNextFaChunk(FastaDataChunk* chunk_, SeqInfos& seqInfos
 		{
 			if(data[0] == '>'){
 				uint64 chunkEnd = 0, pos_ = 0;
+				pos_ = chunk_->size;
 				while(find_next_seq_start(data, cbufSize, pos_)){
 					chunkEnd = pos_;
 				}
@@ -318,6 +319,7 @@ bool FastaFileReader::ReadNextFaChunk(FastaDataChunk* chunk_, SeqInfos& seqInfos
 				bufferSize = cbufSize - chunkEnd;
 			}else{ // means this is a continue chunk for last sequence 
 				uint64 chunkEnd = 0, pos_ = 0;
+				pos_ = chunk_->size;
 				if(find_next_seq_start(data, cbufSize, pos_)){
 					chunkEnd = pos_;
 				}

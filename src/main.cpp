@@ -31,6 +31,7 @@ int producer_fastq_task(std::string file){
 
 void print_chunk(mash::fa::FastaDataChunk *chunk){
     std::cout << "chunk size: " << chunk->size << std::endl;
+    std::cout << "chunk head: " << std::string((char*)chunk->data.Pointer(), 100) << std::endl;
 }
 void print_fachunkpart_info(mash::fa::FastaChunk *fachunk){
     std::cout << "------------------chunk info-----------------" << std::endl;
@@ -60,6 +61,13 @@ int producer_fasta_task(std::string file){
         //line_sum += count_line(fqchunk);
         std::vector<Reference> data;
         print_fachunkpart_info(fachunk);
+        //-----relaease
+        //mash::fa::FastaDataChunk * tmp = fachunk->chunk;
+        //do{
+        //    fastaPool->Release(tmp);
+        //    tmp = tmp->next;
+        //}while(tmp != NULL);
+        //------release
         //line_sum += mash::fa::chunkFormat(*fachunk, data);
     }
     std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
