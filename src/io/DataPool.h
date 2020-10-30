@@ -50,7 +50,7 @@ class TDataPool
 
 public:
 	volatile uint32 partNum;
-	static const uint32 DefaultMaxPartNum = 3200;
+	static const uint32 DefaultMaxPartNum = 32;
 	static const uint32 DefaultBufferPartSize = 1 << 26;
 
 	TDataPool(uint32 maxPartNum_ = DefaultMaxPartNum, uint32 bufferPartSize_ = DefaultBufferPartSize)
@@ -103,7 +103,6 @@ public:
 		ASSERT(part_ != NULL);
 		ASSERT(partNum != 0 && partNum <= maxPartNum);
 		ASSERT(std::find(allocatedPartsPool.begin(), allocatedPartsPool.end(), part_) != allocatedPartsPool.end());
-
 		availablePartsPool.push_back((DataType*)part_);
 		partNum--;
 

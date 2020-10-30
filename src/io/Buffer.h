@@ -146,6 +146,7 @@ struct DataChunk
 	void Reset()
 	{
 		size = 0;
+		next = NULL;
 	}
 };
 

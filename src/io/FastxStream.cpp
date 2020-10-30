@@ -38,6 +38,7 @@ FastaChunk* FastaFileReader::readNextChunk(){
 		return NULL;
 	}
 }
+
 /*
 Description:
 	this function make sure one FastaChunk(dataPart) contains at least

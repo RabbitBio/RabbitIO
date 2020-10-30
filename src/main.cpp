@@ -62,11 +62,11 @@ int producer_fasta_task(std::string file){
         std::vector<Reference> data;
         print_fachunkpart_info(fachunk);
         //-----relaease
-        //mash::fa::FastaDataChunk * tmp = fachunk->chunk;
-        //do{
-        //    fastaPool->Release(tmp);
-        //    tmp = tmp->next;
-        //}while(tmp != NULL);
+        mash::fa::FastaDataChunk * tmp = fachunk->chunk;
+        do{
+            fastaPool->Release(tmp);
+            tmp = tmp->next;
+        }while(tmp != NULL);
         //------release
         //line_sum += mash::fa::chunkFormat(*fachunk, data);
     }
