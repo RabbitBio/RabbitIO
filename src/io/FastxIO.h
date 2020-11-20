@@ -105,12 +105,14 @@ private:
 */ 
 
 int chunkFormat(FastqChunk* &chunk, std::vector<Reference> &,bool);
+int chunkFormat(FastqChunk* &chunk, std::vector<neoReference> &,bool);
 
 //single pe file 
 //int pairedChunkFormat(FastqDataChunk* &chunk, std::vector<ReadPair*>&,bool mHasQuality);
 //Read* getOnePairedRead(FastqDataChunk* &chunk,int &pos_, bool mHasQuality);
 //end single pe file
 std::string getLine(FastqDataChunk* &chunk, int &pos);
+int neoGetLine(FastqDataChunk* &chunk, uint64_t &pos, uint64_t &len);
 
 } // namespace fq
 

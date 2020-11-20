@@ -22,7 +22,6 @@ namespace fa
 {
 
 FastaChunk* FastaFileReader::readNextChunk(){
-	std::cout << "read chunk list" << std::endl;
 	FastaDataChunk* part = NULL;
 	recordsPool.Acquire(part);
 	FastaChunk *dataPart = new FastaChunk;
@@ -45,7 +44,6 @@ Description:
 	one whole sequence, because 
 */
 FastaChunk* FastaFileReader::readNextChunkList(){
-	std::cout << "read chunk list" << std::endl;
 	FastaDataChunk* part = NULL;
 	recordsPool.Acquire(part);
 	FastaChunk *dataPart = new FastaChunk;
@@ -545,6 +543,7 @@ uint64 FastqFileReader::GetPreviousRecordPos(uchar* data_, uint64 pos_,const uin
 
 
 //uint64 IFastqStreamReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_)
+//chunkEnd = GetNextRecordPos(data, chunkEnd, cbufSize);
 uint64 FastqFileReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_)
 {
 	SkipToEol(data_, pos_, size_);
@@ -563,7 +562,7 @@ uint64 FastqFileReader::GetNextRecordPos(uchar* data_, uint64 pos_, const uint64
 
 	if (data_[pos_] == '@')			// previous one was a quality field
 		return pos_;
-	
+//-----[haoz:] is the following code necessary??-------------//	
 	SkipToEol(data_, pos_, size_);
 	++pos_;
 	if(data_[pos_] != '+')

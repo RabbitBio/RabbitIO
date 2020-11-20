@@ -266,6 +266,38 @@ FastqDataChunk* FastqReader::readNextChunk(){
 //		return NULL;
 //	}
 //}
+void print_read(neoReference& ref){
+	std::cout << std::string((char*)ref.base+ref.pname, ref.lname) << std::endl;
+	std::cout << std::string((char*)ref.base+ref.pseq, ref.lseq) << std::endl;
+	std::cout << std::string((char*)ref.base+ref.pstrand, ref.lstrand) << std::endl;
+	std::cout << std::string((char*)ref.base+ref.pqual, ref.lqual) << std::endl;
+}
+int chunkFormat(FastqChunk* &fqChunk, std::vector<neoReference> &data, bool mHasQuality = true){
+	FastqDataChunk * chunk = fqChunk->chunk;
+	uint64_t seq_count = 0;
+	uint64_t line_count = 0;
+	uint64_t pos_ = 0;
+	neoReference ref;
+	while(true){
+		ref.base = chunk->data.Pointer();
+		ref.pname = pos_;
+		if(neoGetLine(chunk, pos_, ref.lname)){
+			ref.pseq = pos_; 
+		} 
+		else{ break;}
+		neoGetLine(chunk, pos_, ref.lseq); 
+		ref.pstrand = pos_; 
+		neoGetLine(chunk, pos_, ref.lstrand); 
+		ref.pqual = pos_;  
+		neoGetLine(chunk, pos_, ref.lqual);
+		seq_count++;
+		//print_read(ref);
+		//data.emplace_back(ref);
+	}
+
+	return seq_count;
+}
+/*
 int chunkFormat(FastqChunk* &fqChunk, std::vector<Reference> &data, bool mHasQuality = true){
 	//format a whole chunk and return number of reads
 	FastqDataChunk * chunk = fqChunk->chunk;
@@ -310,6 +342,7 @@ int chunkFormat(FastqChunk* &fqChunk, std::vector<Reference> &data, bool mHasQua
 
 	return seq_count;
 }
+*/
 //int pairedChunkFormat(FastqDataChunk* &chunk, std::vector<ReadPair*> &data, bool mHasQuality){
 //	//format a whole chunk and return number of reads
 //	int seq_count = 0;
@@ -398,7 +431,54 @@ string getLine(FastqDataChunk* &chunk, int &pos){
 	}
 	return "";
 }
-
+int neoGetLine(FastqDataChunk* &chunk, uint64_t &pos, uint64_t &len){
+	int start_pos = pos;
+	const char* data = (char *)chunk->data.Pointer();
+	const uint64_t chunk_size = chunk->size + 1;
+	/*
+	while (pos <= chunk_size && data[pos] != '\n'){
+		pos++;
+	}
+	len = pos - start_pos - 1;
+	return len;
+	*/
+	//while(pos <= (chunk->size + 1)){
+	while(pos <= chunk_size){
+		//if(data[pos] == '\n' || data[pos] == '\r' || pos == (chunk->size + 1)){
+		if(data[pos] == '\n'){
+			//find a line
+			pos++;
+			//return string(data+start_pos, pos-start_pos - 1);
+			//pos = start_pos; 
+			len = pos - start_pos - 1;
+			return len;
+		}
+		else{
+			pos++;
+		}
+	}
+	return 0;
+}
+/*
+int neoGetLine(FastqDataChunk* &chunk, char* &pos, uint64_t &len){
+	char* start_pos  = pos;
+	char* data = (char *)chunk->data.Pointer();
+	char* chunkend = data + chunk->size + 1; //the end address of this chunk(memory address)
+	while(pos <= chunkend){
+		if(*pos == '\n' || *pos == '\r' || pos == chunkend){
+			//find a line
+			pos++;
+			len = (pos - start_pos)/sizeof(char); //-------if need the division??-------//
+			//return string(data+start_pos, pos-start_pos - 1);
+			return len;
+		}
+		else{
+			pos++;
+		}
+	}
+	return 0;
+}
+*/
 } // namesapce fq
 
 } // namespace mash

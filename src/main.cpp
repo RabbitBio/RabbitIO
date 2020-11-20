@@ -3,13 +3,14 @@
 #include "io/FastxChunk.h"
 #include <string>
 #include <iostream>
+#include "cmdparser/CLI11.hpp"
 
 int count_line(mash::fq::FastqChunk* fqchunk){
     return 1000;
 }
 
 int producer_fastq_task(std::string file){
-    mash::fq::FastqDataPool *fastqPool = new mash::fq::FastqDataPool();
+    mash::fq::FastqDataPool *fastqPool = new mash::fq::FastqDataPool(32, 1<<22);
     mash::fq::FastqFileReader *fqFileReader;
     //mash::fq::FastqReader *fastqReader;
     fqFileReader = new mash::fq::FastqFileReader(file, *fastqPool, false);
@@ -22,10 +23,12 @@ int producer_fastq_task(std::string file){
         if (fqchunk->chunk == NULL) break;
         n_chunks++;
         //line_sum += count_line(fqchunk);
-        std::vector<Reference> data;
+        std::vector<neoReference> data;
+        data.resize(10000);
         line_sum += mash::fq::chunkFormat(fqchunk, data, true);
+        fastqPool->Release(fqchunk->chunk);
     }
-    std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
+    std::cout << "file " << file << " has " << n_chunks << " chunks" << std::endl;
     return 0;
 }
 
@@ -60,7 +63,7 @@ int producer_fasta_task(std::string file){
         n_chunks++;
         //line_sum += count_line(fqchunk);
         std::vector<Reference> data;
-        print_fachunkpart_info(fachunk);
+        //print_fachunkpart_info(fachunk);
         //-----relaease
         mash::fa::FastaDataChunk * tmp = fachunk->chunk;
         do{
@@ -76,10 +79,24 @@ int producer_fasta_task(std::string file){
     //result record: readnextchunklist: 2.85//3.25
     //               readnextchunk:     2.76
 }
-int main(){
+int main(int argc, char** argv){
     //std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
     std::string file = "/home/old_home/haoz/workspace/data/hg19/hg19.fa";
-    producer_fasta_task(file);
+    //---------------cmd parser----------------
+    CLI::App app{"Wellcome to RabbitIO"};
+    CLI::Option* opt;
+    std::string filename ;
+    app.add_option("-f, --file", filename, "input file name") 
+        ->default_val(file);
+    //----------------------------------------
+    CLI11_PARSE(app, argc, argv);
+    if(app.count("-f"))
+        std::cout << "filename: " << filename << std::endl;
+    else{
+        std::cout << "-f not find, use default: " << filename << std::endl;
+
+    }
+    producer_fastq_task(filename);
     /*
     FastqReader processer( );
     io::data::chunk<FastqChunk> fqchunk = processer.get_chunk(file);
