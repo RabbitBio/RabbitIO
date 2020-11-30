@@ -292,7 +292,7 @@ int chunkFormat(FastqChunk* &fqChunk, std::vector<neoReference> &data, bool mHas
 		neoGetLine(chunk, pos_, ref.lqual);
 		seq_count++;
 		//print_read(ref);
-		//data.emplace_back(ref);
+		data.emplace_back(ref);
 	}
 
 	return seq_count;

@@ -4,13 +4,16 @@
 #include <string>
 #include <iostream>
 #include "cmdparser/CLI11.hpp"
+#include "io/DataQueue.h"
+#include <thread>
+
+typedef  mash::core::TDataQueue<mash::fq::FastqDataChunk> FqChunkQueue;
 
 int count_line(mash::fq::FastqChunk* fqchunk){
     return 1000;
 }
 
-int producer_fastq_task(std::string file){
-    mash::fq::FastqDataPool *fastqPool = new mash::fq::FastqDataPool(32, 1<<22);
+int producer_fastq_task(std::string file, mash::fq::FastqDataPool* fastqPool, FqChunkQueue &dq){
     mash::fq::FastqFileReader *fqFileReader;
     //mash::fq::FastqReader *fastqReader;
     fqFileReader = new mash::fq::FastqFileReader(file, *fastqPool, false);
@@ -22,14 +25,29 @@ int producer_fastq_task(std::string file){
         fqchunk->chunk = fqFileReader->readNextChunk();
         if (fqchunk->chunk == NULL) break;
         n_chunks++;
+        std::cout << "readed chunk: " << n_chunks << std::endl;
+        //dq.Push(n_chunks, fqchunk->chunk);
         //line_sum += count_line(fqchunk);
-        std::vector<neoReference> data;
-        data.resize(10000);
+        //std::vector<neoReference> data;
+        //data.resize(10000);
+        //line_sum += mash::fq::chunkFormat(fqchunk, data, true);
+        fastqPool->Release(fqchunk->chunk);
+    }
+    dq.SetCompleted();
+    std::cout << "file " << file << " has " << n_chunks << " chunks" << std::endl;
+    return 0;
+}
+void consumer_fastq_task(mash::fq::FastqDataPool* fastqPool, FqChunkQueue &dq){
+    long line_sum = 0;
+    mash::int64 id = 0;
+    std::vector<Reference> data;
+    mash::fq::FastqChunk *fqchunk = new mash::fq::FastqChunk;
+    data.resize(10000);
+    while(dq.Pop(id, fqchunk->chunk)){
         line_sum += mash::fq::chunkFormat(fqchunk, data, true);
         fastqPool->Release(fqchunk->chunk);
     }
-    std::cout << "file " << file << " has " << n_chunks << " chunks" << std::endl;
-    return 0;
+    std::cout << "line_sum: " << line_sum << std::endl;
 }
 
 void print_chunk(mash::fa::FastaDataChunk *chunk){
@@ -79,6 +97,7 @@ int producer_fasta_task(std::string file){
     //result record: readnextchunklist: 2.85//3.25
     //               readnextchunk:     2.76
 }
+
 int main(int argc, char** argv){
     //std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
     std::string file = "/home/old_home/haoz/workspace/data/hg19/hg19.fa";
@@ -86,8 +105,11 @@ int main(int argc, char** argv){
     CLI::App app{"Wellcome to RabbitIO"};
     CLI::Option* opt;
     std::string filename ;
+    int th;
     app.add_option("-f, --file", filename, "input file name") 
         ->default_val(file);
+    app.add_option("-t, --threads", th, "worktreads") 
+        ->default_val(2);
     //----------------------------------------
     CLI11_PARSE(app, argc, argv);
     if(app.count("-f"))
@@ -96,7 +118,17 @@ int main(int argc, char** argv){
         std::cout << "-f not find, use default: " << filename << std::endl;
 
     }
-    producer_fastq_task(filename);
+    mash::fq::FastqDataPool *fastqPool = new mash::fq::FastqDataPool(32, 1<<22);
+    FqChunkQueue queue1(64, 1);
+    std::thread producer(producer_fastq_task, filename, fastqPool, std::ref(queue1));
+    std::thread** threads = new std::thread*[th];
+    //for(int t = 0; t < th; t++){
+    //    threads[t] = new std::thread(std::bind(consumer_fastq_task, fastqPool, std::ref(queue1)));
+    //}
+    producer.join();
+    //for(int t = 0; t < th; t++){
+    //    threads[t]->join();
+    //}
     /*
     FastqReader processer( );
     io::data::chunk<FastqChunk> fqchunk = processer.get_chunk(file);
