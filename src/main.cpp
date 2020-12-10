@@ -40,7 +40,7 @@ int producer_fastq_task(std::string file, mash::fq::FastqDataPool* fastqPool, Fq
 void consumer_fastq_task(mash::fq::FastqDataPool* fastqPool, FqChunkQueue &dq){
     long line_sum = 0;
     mash::int64 id = 0;
-    std::vector<Reference> data;
+    std::vector<neoReference> data;
     mash::fq::FastqChunk *fqchunk = new mash::fq::FastqChunk;
     data.resize(10000);
     while(dq.Pop(id, fqchunk->chunk)){

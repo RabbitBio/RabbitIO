@@ -55,20 +55,20 @@ typedef unsigned long long	uint64;
 
 // exception class
 //
-class DsrcException : public std::exception
+class RioException : public std::exception
 {
 	std::string message;
 
 public:
-	DsrcException(const char* msg_)
+	RioException(const char* msg_)
 		: message(msg_)
 	{}
 
-	DsrcException(const std::string& msg_)
+	RioException(const std::string& msg_)
 		: message(msg_)
 	{}
 
-	~DsrcException() throw()
+	~RioException() throw()
 	{}
 
 	const char* what() const throw()				// for std::exception interface

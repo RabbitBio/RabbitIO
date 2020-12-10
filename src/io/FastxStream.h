@@ -96,7 +96,7 @@ public:
 			mFile = FOPEN(fileName_.c_str(), "rb");
 			std::cerr << "fasta file name: " << fileName_.c_str() << std::endl;
 			if(mFile == NULL){
-				throw DsrcException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
+				throw RioException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
 			}
 		}
 		
@@ -117,7 +117,7 @@ public:
 		{
 			mZipFile = gzdopen(fd,"r");
 			if(mZipFile == NULL){
-				throw DsrcException("Can not open file to read!"); //--------------need to change----------//
+				throw RioException("Can not open file to read!"); //--------------need to change----------//
 			}
 			gzrewind(mZipFile);
 
@@ -125,7 +125,7 @@ public:
 
 			mFile = FDOPEN(fd, "rb");
 			if(mFile == NULL){
-				throw DsrcException("Can not open file to read!"); //--------------need to change----------//
+				throw RioException("Can not open file to read!"); //--------------need to change----------//
 			}
 		
 		}
@@ -315,7 +315,7 @@ public:
 		if(isZipped){
 			mZipFile = gzopen(fileName_.c_str(),"r");
 		  if(mZipFile == NULL){
-		  	throw DsrcException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
+		  	throw RioException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
 		  }
 			//isZipped=true;
 			gzrewind(mZipFile);
@@ -323,7 +323,7 @@ public:
 		}else{
 		  mFile = FOPEN(fileName_.c_str(), "rb");
 		  if(mFile == NULL){
-		  	throw DsrcException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
+		  	throw RioException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
 		}
 	}
 		
@@ -344,7 +344,7 @@ public:
 			mZipFile = gzdopen(fd, "r");
 			//isZipped=true;
 			if(mZipFile == NULL){
-		  		throw DsrcException("Can not open file to read: " ); //--------------need to change----------//
+		  		throw RioException("Can not open file to read: " ); //--------------need to change----------//
 			}
 
 			gzrewind(mZipFile);
@@ -352,7 +352,7 @@ public:
 		}else{
 		  mFile = FDOPEN(fd, "rb");
 		  if(mFile == NULL){
-		  	throw DsrcException("Can not open file to read: " ); //--------------need to change----------//
+		  	throw RioException("Can not open file to read: " ); //--------------need to change----------//
 		}
 	}
 		

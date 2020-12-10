@@ -6,7 +6,7 @@
   
   Version: 2.00
 */
-  
+ 
 #include <cstdio>
 #include <vector>
 #include <map>
