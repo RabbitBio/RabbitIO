@@ -1,4 +1,3 @@
-#include "io/FastxIO.h"
 #include "io/FastxStream.h"
 #include "io/FastxChunk.h"
 #include <string>
@@ -6,6 +5,7 @@
 #include "cmdparser/CLI11.hpp"
 #include "io/DataQueue.h"
 #include <thread>
+#include "io/Formater.h"
 
 typedef  mash::core::TDataQueue<mash::fq::FastqDataChunk> FqChunkQueue;
 
@@ -44,7 +44,7 @@ void consumer_fastq_task(mash::fq::FastqDataPool* fastqPool, FqChunkQueue &dq){
     mash::fq::FastqChunk *fqchunk = new mash::fq::FastqChunk;
     data.resize(10000);
     while(dq.Pop(id, fqchunk->chunk)){
-        line_sum += mash::fq::chunkFormat(fqchunk, data, true);
+			//line_sum += mash::fq::chunkFormat(fqchunk, data, true);
         fastqPool->Release(fqchunk->chunk);
     }
     std::cout << "line_sum: " << line_sum << std::endl;

@@ -12,9 +12,8 @@
 #include <map>
 #include <cstdio>
 
-//#include "../Sketch.h"
 #include "Reference.h"
-#include "FastxIO.h"
+#include "Formater.h"
 #include "Buffer.h"
 #include "FastxStream.h" 
 //#include "read.h"
@@ -272,6 +271,7 @@ void print_read(neoReference& ref){
 	std::cout << std::string((char*)ref.base+ref.pstrand, ref.lstrand) << std::endl;
 	std::cout << std::string((char*)ref.base+ref.pqual, ref.lqual) << std::endl;
 }
+
 int chunkFormat(FastqChunk* &fqChunk, std::vector<neoReference> &data, bool mHasQuality = true){
 	FastqDataChunk * chunk = fqChunk->chunk;
 	uint64_t seq_count = 0;
