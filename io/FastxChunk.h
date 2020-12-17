@@ -35,12 +35,10 @@ typedef core::TDataPool<FastaDataChunk> FastaDataPool;
 
 struct FastaChunk{
 
-	FastaDataChunk * chunk;
-	uint64 start;
+FastaDataChunk * chunk;
+uint64 start;
 	uint64 end;
 	uint64 nseqs;
-	//bool startSplit;
-	//bool endSplit;
 
 	void print(){
 		std::cout << "chunk start: " << this->start << std::endl;	
@@ -57,25 +55,17 @@ namespace fq
 {
 
 typedef core::DataChunk FastqDataChunk;
+typedef core::DataPairChunk FastqDataPairChunk;
 
 typedef core::TDataQueue<FastqDataChunk> FastqDataQueue;
 typedef core::TDataPool<FastqDataChunk> FastqDataPool;
 
 struct FastqChunk{
-
 	FastqDataChunk * chunk;
-	//uint64 start;
-	//uint64 end;
-	//uint64 nseqs;
-	////bool startSplit;
-	////bool endSplit;
+};
 
-	//void print(){
-	//	std::cout << "chunk start: " << this->start << std::endl;	
-	//	std::cout << "chunk end: "   << this->end   << std::endl;	
-	//	std::cout << "chunk nseqs: " << this->nseqs << std::endl;	
-	//	return;
-	//}
+struct FastqPairChunk{
+	FastqDataPairChunk * chunk;
 };
 
 } // namespace fq
