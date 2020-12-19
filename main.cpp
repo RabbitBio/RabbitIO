@@ -129,6 +129,12 @@ int main(int argc, char** argv){
     //for(int t = 0; t < th; t++){
     //    threads[t]->join();
     //}
+
+	//-----freee
+	delete fastqPool;
+    for(int t = 0; t < th; t++){
+        delete threads[t];
+    }
     /*
     FastqReader processer( );
     io::data::chunk<FastqChunk> fqchunk = processer.get_chunk(file);
