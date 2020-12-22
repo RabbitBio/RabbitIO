@@ -1,9 +1,9 @@
 /*
   This file is a part of DSRC software distributed under GNU GPL 2 licence.
   The homepage of the DSRC project is http://sun.aei.polsl.pl/dsrc
-  
+
   Authors: Lucas Roguski and Sebastian Deorowicz
-  
+
   Version: 2.00
 */
 
@@ -22,32 +22,28 @@
 //#include "Sequence.h"
 #include "Reference.h"
 
-namespace mash
-{
+namespace mash {
 
-namespace fa
-{
+namespace fa {
 
-std::string getSequence(FastaDataChunk* &chunk, uint64 &pos);	//addbyxxm
-std::string getLine(FastaDataChunk* &chunk, uint64 &pos);
-int chunkFormat(FastaChunk & fachunk, std::vector<Reference> & refs);
-int chunkFormat(FastaChunk & fachunk, std::vector<Reference> & refs, int kmerSize);
-Reference getNextSeq(FastaChunk & fachunk, bool & done, uint64 & pos);
+std::string getSequence(FastaDataChunk *&chunk, uint64 &pos);  // addbyxxm
+std::string getLine(FastaDataChunk *&chunk, uint64 &pos);
+int chunkFormat(FastaChunk &fachunk, std::vector<Reference> &refs);
+int chunkFormat(FastaChunk &fachunk, std::vector<Reference> &refs, int kmerSize);
+Reference getNextSeq(FastaChunk &fachunk, bool &done, uint64 &pos);
 
-} // namespace fa
+}  // namespace fa
 
-namespace fq
-{
+namespace fq {
 
+int chunkFormat(FastqChunk *&chunk, std::vector<Reference> &, bool);
+int chunkFormat(FastqChunk *&chunk, std::vector<neoReference> &, bool);
 
-int chunkFormat(FastqChunk* &chunk, std::vector<Reference> &,bool);
-int chunkFormat(FastqChunk* &chunk, std::vector<neoReference> &,bool);
+std::string getLine(FastqDataChunk *&chunk, int &pos);
+int neoGetLine(FastqDataChunk *&chunk, uint64_t &pos, uint64_t &len);
 
-std::string getLine(FastqDataChunk* &chunk, int &pos);
-int neoGetLine(FastqDataChunk* &chunk, uint64_t &pos, uint64_t &len);
+}  // namespace fq
 
-} // namespace fq
-
-} // namespace mash
+}  // namespace mash
 
 #endif
