@@ -295,16 +295,17 @@ private:
 
 namespace fq
 {
-
 class FastqFileReader
 {
 private:
 	static const uint32 SwapBufferSize = 1 << 20; // the longest FASTQ sequence todate is no longer than 1Mbp. 
 
 public:
-	FastqFileReader(const std::string& fileName_, FastqDataPool& pool_, bool isZippedNew = false)
+	FastqFileReader(const std::string& fileName_, FastqDataPool& pool_, std::string fileName2_ = "", bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
+		,	swapBuffer2(SwapBufferSize)
 		,	bufferSize(0)
+		,	bufferSize2(0)
 		,	eof(false)
 		,	usesCrlf(false)
 		,	isZipped(isZippedNew)
@@ -322,17 +323,21 @@ public:
 
 		}else{
 		  mFile = FOPEN(fileName_.c_str(), "rb");
+		  if(fileName2_ != ""){
+			  mFile2 = FOPEN(fileName2_.c_str(), "rb");
+			  if(mFile2 == NULL) throw RioException("Can not open file to read: " ); //--------------need to change----------//
+		  }
 		  if(mFile == NULL){
 		  	throw RioException(("Can not open file to read: " + fileName_).c_str()); //--------------need to change----------//
+		  }
 		}
 	}
-		
-			
-	}
 
-	FastqFileReader(int fd, FastqDataPool& pool_, bool isZippedNew = false)
+	FastqFileReader(int fd, FastqDataPool& pool_, int fd2 = -1, bool isZippedNew = false)
 		:	swapBuffer(SwapBufferSize)
+		,	swapBuffer2(SwapBufferSize)
 		,	bufferSize(0)
+		,	bufferSize2(0)
 		,	eof(false)
 		,	usesCrlf(false)
 		,	isZipped(isZippedNew)
@@ -351,12 +356,17 @@ public:
 
 		}else{
 		  mFile = FDOPEN(fd, "rb");
+		  if(fd != -1){
+		  	mFile2 = FDOPEN(fd2, "rb");
+			if(mFile2 == NULL) throw RioException("Can not open file to read: " ); //--------------need to change----------//
+		  }
 		  if(mFile == NULL){
 		  	throw RioException("Can not open file to read: " ); //--------------need to change----------//
-		}
-	}
+		  }
 		
 			
+		}
+	    
 	}
 
 	~FastqFileReader()
@@ -380,6 +390,7 @@ public:
 	void readChunk();
 	bool ReadNextChunk(FastqDataChunk* chunk_);
 	bool ReadNextPairedChunk(FastqDataChunk* chunk_);
+	FastqDataPairChunk* readNextPairChunk();
 	void Close()
 	{
 		if(mFile != NULL){
@@ -407,13 +418,33 @@ public:
 		}
 		
 	}
+
+	int64 Read2(byte* memory_, uint64 size_)
+	{	
+		if(isZipped){
+			int64 n = gzread(mZipFile,memory_,size_); // TODO: mzipFile2
+			if(n == -1)
+				std::cerr<<"Error to read gzip file" <<std::endl;
+			return n;
+		}
+		else{
+		  int64 n = fread(memory_, 1, size_, mFile2) ;
+		  return n;
+		}
+		
+	}
+
 private:
 	core::Buffer	swapBuffer;
 	uint64			bufferSize;
+	//just for pair-end usage
+	core::Buffer 	swapBuffer2;
+	uint64			bufferSize2;
 	bool			eof;
 	bool			usesCrlf;
 	bool			isZipped;
 	FILE*           mFile = NULL;
+	FILE*           mFile2 = NULL;
 	gzFile          mZipFile = NULL;
 
 	//added from fastxIO.h 
@@ -428,7 +459,7 @@ private:
 
 	void SkipToEol(uchar* data_, uint64& pos_, const uint64 size_)
 	{
-		//cout << "SkipToEol " << pos_ << " " << size_ << endl;
+		//std::cout << "SkipToEol " << pos_ << " " << size_ << std::endl;
 		ASSERT(pos_ < size_);
 
 		while (data_[pos_] != '\n' && data_[pos_] != '\r' && pos_ < size_)

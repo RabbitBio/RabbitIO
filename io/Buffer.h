@@ -150,6 +150,11 @@ struct DataChunk
 	}
 };
 
+struct DataPairChunk{
+	DataChunk *left_part;
+	DataChunk *right_part;
+};
+
 } // namespace core
 
 } // namespace mash
