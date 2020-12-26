@@ -180,6 +180,51 @@ int chunkFormat(FastqChunk *&fqChunk, std::vector<neoReference> &data, bool mHas
   return seq_count;
 }
 
+int chunkFormat(FastqChunk* &fqChunk, std::vector<Reference> &data, bool mHasQuality = true){
+	//format a whole chunk and return number of reads
+	FastqDataChunk * chunk = fqChunk->chunk;
+	int seq_count = 0;
+	int line_count = 0;
+	int pos_ = 0;
+	Reference ref;
+
+	while(true){
+		string name = getLine(chunk, pos_);
+		if(name.empty()) break;//dsrc guarantees that read are completed!
+		//std::cerr << name << std::endl;
+
+		string sequence = getLine(chunk, pos_);
+		//std::cerr<< sequence << std::endl;
+
+		string strand = getLine(chunk, pos_);
+		//std::cerr << strand << std::endl;
+		ref.name = name;
+		ref.seq = sequence;
+		ref.strand = strand;
+
+		if(!mHasQuality){
+			string quality = string(sequence.length(), 'K');
+			//std::cerr << quality << std::endl;
+			//data.push_back(new Read(name, sequence, strand, quality));
+			//data.emplace_back(Sketch::Reference(name, "", sequence, strand, quality));
+			ref.quality = quality;
+			data.push_back(ref);
+			seq_count++;
+
+		}else{
+			string quality = getLine(chunk, pos_);
+			//std::cerr << quality << std::endl;
+			//data.push_back(new Read(name, sequence, strand, quality));
+			//data.emplace_back(Sketch::Reference(name, "", sequence, strand, quality));
+			ref.quality = quality;
+			data.push_back(ref);
+			seq_count++;
+		}
+	}
+
+	return seq_count;
+}
+
 string getLine(FastqDataChunk *&chunk, int &pos) {
   int start_pos = pos;
   char *data = (char *)chunk->data.Pointer();
