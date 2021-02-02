@@ -542,14 +542,14 @@ uint64 FastqFileReader::GetPreviousRecordPos(uchar *data_, uint64 pos_, const ui
     // std::cout<<"pos_"<<pos_<<std::endl;
     SkipToSol(data_, pos_, size_);
   }
-  //标记一下，看是否是质量分
+  //mark to check if the '@' is quality score
   uint64 pos0 = pos_ + offset;
   SkipToSol(data_, pos_, size_);
   if (data_[pos_ + offset] == '+') {
-    //说明上一个@号是质量分
+	// indicate that the '@' is quality score
+	SkipToSol(data_, pos_, size_);
     SkipToSol(data_, pos_, size_);
-    SkipToSol(data_, pos_, size_);
-    //此时应该是name
+    //it is name
     if (data_[pos_ + offset] != '@') {
       std::cout << "core dump is " << data_[pos_ + offset] << std::endl;
       return pos_ + offset;
@@ -560,7 +560,7 @@ uint64 FastqFileReader::GetPreviousRecordPos(uchar *data_, uint64 pos_, const ui
     return pos0;
   }
 }
-
+	
 uint64 FastqFileReader::GetNextRecordPos(uchar *data_, uint64 pos_, const uint64 size_) {
   SkipToEol(data_, pos_, size_);
   ++pos_;

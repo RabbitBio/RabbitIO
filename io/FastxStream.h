@@ -212,9 +212,10 @@ class FastaFileReader {
       }
     }
   }
-  //跳转到行首
+  /*
+   * skip to the end of line or the end of data_
+   */
   void SkipToSol(uchar *data_, uint64 &pos_, const uint64 size_) {
-    // std::cout<<"SkipToSol:"<<data_[pos_]<<std::endl;
     ASSERT(pos_ < size_);
     if (data_[pos_] == '\n') {
       --pos_;
@@ -223,9 +224,8 @@ class FastaFileReader {
       usesCrlf = true;
       pos_--;
     }
-    //找到换行符
+    //find EOL
     while (data_[pos_] != '\n' && data_[pos_] != '\r') {
-      // std::cout<<"pos_;"<<pos_<<std::endl;
       --pos_;
     }
     if (data_[pos_] == '\n') {
@@ -243,9 +243,6 @@ class FastaFileReader {
     // TODO follow SkipToEol for both \n and \n\r
     while (pos0 < size_) {
       if (data_[pos0] == '\n') {
-        // std::cout << "enter at: " << pos0 << std::endl;
-        // std::string name((char*)(data_ + pos_), pos0-pos_);
-        // std::cerr << name << std::endl;
         pos_ = pos0;
         found = true;
         break;
