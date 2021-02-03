@@ -27,7 +27,7 @@ namespace th = boost;
 namespace th = std;
 #endif
 
-namespace mash {
+namespace rabbit {
 
 namespace core {
 
@@ -98,6 +98,6 @@ class TDataPool {
 
 }  // namespace core
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif  // H_DATA_POOL

@@ -22,7 +22,7 @@
 #include "Globals.h"
 #include "utils.h"
 
-namespace mash {
+namespace rabbit {
 
 namespace fa {
 
@@ -65,6 +65,6 @@ struct FastqPairChunk {
 
 }  // namespace fq
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif

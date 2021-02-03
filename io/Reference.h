@@ -28,7 +28,7 @@ struct neoReference {
   uint64_t lstrand;
   // uint64_t length;
   uint64_t gid;
-  mash::byte *base;
+  rabbit::byte *base;
 };
 typedef std::vector<Reference> SeqInfos;
 typedef Reference OneSeqInfo;

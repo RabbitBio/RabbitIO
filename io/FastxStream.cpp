@@ -15,7 +15,7 @@
 #include "Reference.h"
 #include "FastxStream.h"
 
-namespace mash {
+namespace rabbit {
 
 namespace fa {
 
@@ -587,4 +587,4 @@ uint64 FastqFileReader::GetNextRecordPos(uchar *data_, uint64 pos_, const uint64
 
 }  // namespace fq
 
-}  // namespace mash
+}  // namespace rabbit

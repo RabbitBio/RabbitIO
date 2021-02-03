@@ -22,7 +22,7 @@
 //#include "Sequence.h"
 #include "Reference.h"
 
-namespace mash {
+namespace rabbit {
 
 namespace fa {
 
@@ -44,6 +44,6 @@ int neoGetLine(FastqDataChunk *&chunk, uint64_t &pos, uint64_t &len);
 
 }  // namespace fq
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif

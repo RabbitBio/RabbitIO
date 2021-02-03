@@ -16,7 +16,7 @@
 #include "Globals.h"
 #include "utils.h"
 
-namespace mash {
+namespace rabbit {
 
 namespace core {
 
@@ -118,6 +118,6 @@ struct DataPairChunk {
 
 }  // namespace core
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif  // BUFFER_H

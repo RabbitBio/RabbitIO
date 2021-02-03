@@ -58,7 +58,7 @@
 #define FCLOSE fclose
 #endif
 
-namespace mash {
+namespace rabbit {
 
 namespace fa {
 
@@ -444,6 +444,6 @@ class FastqFileReader {
 
 }  // namespace fq
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif  // H_FASTQSTREAM

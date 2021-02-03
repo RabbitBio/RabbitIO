@@ -23,7 +23,7 @@ namespace th = boost;
 namespace th = std;
 #endif
 
-namespace mash {
+namespace rabbit {
 
 namespace core {
 
@@ -112,6 +112,6 @@ class TDataQueue {
 
 }  // namespace core
 
-}  // namespace mash
+}  // namespace rabbit
 
 #endif  // DATA_QUEUE_H
