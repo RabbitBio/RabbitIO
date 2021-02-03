@@ -26,11 +26,12 @@ Documentation
 
 .. toctree::
    :maxdepth: 2
-
-   api
+    
+   API/api
 
 .. install
    introduction
    supp
    tutorials
    api
+

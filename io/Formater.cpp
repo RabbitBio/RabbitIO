@@ -1,12 +1,3 @@
-/*
-  This file is a part of DSRC software distributed under GNU GPL 2 licence.
-  The homepage of the DSRC project is http://sun.aei.polsl.pl/dsrc
-
-  Authors: Lucas Roguski and Sebastian Deorowicz
-
-  Version: 2.00
-*/
-
 #include <cstdio>
 #include <vector>
 #include <map>
@@ -16,8 +7,6 @@
 #include "Formater.h"
 #include "Buffer.h"
 #include "FastxStream.h"
-//#include "read.h"
-//#include "Sequence.h"
 
 using namespace std;
 

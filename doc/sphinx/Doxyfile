@@ -1,5 +1,5 @@
 PROJECT_NAME           = RabbitIO
-INPUT                  = ../../src/io/FastxIO.h
+INPUT                  = ../../io
 RECURSIVE              = YES
 
 GENERATE_HTML          = NO
