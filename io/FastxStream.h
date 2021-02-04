@@ -62,15 +62,25 @@ namespace rabbit {
 
 namespace fa {
 
+/*
+ * @brief Fasta file reader
+ * @details A class to read fasta (.fa) file
+ */
 class FastaFileReader {
  private:
-  // static const uint32 SwapBufferSize = 1 << 20;
+	/// Swap buffer size (16M default)
   static const uint32 SwapBufferSize = 1 << 26;  // 16MB
-  // static const uint32 SwapBufferSize = 1 << 13;
-  // added from fastaReader
+	/// Fasta data data pool
   FastaDataPool &recordsPool;
 
  public:
+	/*
+	 * @brief FastaFileReader Constructor
+	 * @param fileName_ Fasta file path
+	 * @param pool_ Data pool
+	 * @param halo size
+	 * @param isZippedNew if true, it will use gzopen to read fileName_
+	 */
   FastaFileReader(const std::string &fileName_, FastaDataPool &pool_, uint64 halo = 21, bool isZippedNew = false)
       : swapBuffer(SwapBufferSize),
         bufferSize(0),
@@ -96,6 +106,13 @@ class FastaFileReader {
     }
   }
 
+	/**
+	 * @brief FastaFileReader Constructor
+	 * @param fd Fasta file descriptor (if fasta file is opened)
+	 * @param pool_ Data pool
+	 * @param halo halo size
+	 * @param isZippedNew if true, it will use gzopen to read fileName_
+	 */
   FastaFileReader(int fd, FastaDataPool &pool_, uint64 halo = 21, bool isZippedNew = false)
       : swapBuffer(SwapBufferSize),
         bufferSize(0),
@@ -126,7 +143,7 @@ class FastaFileReader {
     // delete mFile;
     // delete mZipFile;
   }
-
+	/// if it is end of file
   bool Eof() const { return eof; }
 
   FastaChunk *readNextChunk();
@@ -135,6 +152,7 @@ class FastaFileReader {
   bool ReadNextFaChunk(FastaChunk *chunk_, SeqInfos &seqInfos);
   bool ReadNextFaChunk(FastaDataChunk *dataChunk_, SeqInfos &seqInfos, bool &continue_read);
 
+	/// close mFile
   void Close() {
     if (mFile != NULL) {
       FCLOSE(mFile);
@@ -147,6 +165,11 @@ class FastaFileReader {
     }
   }
 
+	/**
+	 * @brief read data from file
+	 * @param memory_ pointer to store read file
+	 * @param size_ read size (byte)
+	 */
   int64 Read(byte *memory_, uint64 size_) {
     if (isZipped) {
       int64 n = gzread(mZipFile, memory_, size_);
@@ -177,14 +200,16 @@ class FastaFileReader {
   // added form fastareader
   SeqInfos seqInfos;
   uint32 numParts;
-  // uint64 lastOneReadPos;
-  // uint64 lastTwoReadPos;
 
-  // uint64 GetNextRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
-  // uint64 GetPreviousRecordPos(uchar* data_, uint64 pos_, const uint64 size_);
  private:
   uint64 FindCutPos(FastaChunk *dataChunk_, uchar *data_, const uint64 size_, const uint64 halo_, SeqInfos &seqInfos);
 
+	/**
+	 * @brief Skip to end of line
+	 * @param data_ base pointer
+	 * @param pos_ start position to skip
+	 * @param size_ data_ size
+	 */
   void FastaSkipToEol(uchar *data_, uint64 &pos_, const uint64 size_) {
     // cout << "SkipToEol " << pos_ << " " << size_ << endl;
     ASSERT(pos_ <= size_);
@@ -212,9 +237,12 @@ class FastaFileReader {
       }
     }
   }
-  /*
-   * skip to the end of line or the end of data_
-   */
+	/**
+	 * @brief Skip to start of line
+	 * @param data_ base pointer
+	 * @param pos_ start position to skip
+	 * @param size_ data_ size
+	 */
   void SkipToSol(uchar *data_, uint64 &pos_, const uint64 size_) {
     ASSERT(pos_ < size_);
     if (data_[pos_] == '\n') {
@@ -237,6 +265,12 @@ class FastaFileReader {
     }
   }
 
+	/**
+	 * @brief If contains '\n' in uchar buffer
+	 * @param data_ base pointer
+	 * @param pos_ start position to skip
+	 * @param size_ data_ size
+	 */
   bool FindEol(uchar *data_, uint64 &pos_, const uint64 size_) {
     bool found = false;
     uint64 pos0 = pos_;
@@ -262,6 +296,13 @@ class FastqFileReader {
   static const uint32 SwapBufferSize = 1 << 20;  // the longest FASTQ sequence todate is no longer than 1Mbp.
 
  public:
+	/**
+	 * @brief FastaFileReader Constructor
+	 * @param fileName_ Fastq file name 
+	 * @param pool_ Data pool
+	 * @param fileName2_ the second file name if source file is pair-end sequence
+	 * @param isZippedNew if true, it will use gzopen to read fileName_ and fileName2_
+	 */
   FastqFileReader(const std::string &fileName_, FastqDataPool &pool_, std::string fileName2_ = "",
                   bool isZippedNew = false)
       : swapBuffer(SwapBufferSize),
@@ -297,6 +338,13 @@ class FastqFileReader {
     }
   }
 
+	/**
+	 * @brief FastaFileReader Constructor
+	 * @param fileName_ Fastq file descriptor 
+	 * @param pool_ Data pool
+	 * @param fileName2_ the second file descriptor if source file is pair-end sequence
+	 * @param isZippedNew if true, it will use gzopen to read fd and fd2
+	 */
   FastqFileReader(int fd, FastqDataPool &pool_, int fd2 = -1, bool isZippedNew = false)
       : swapBuffer(SwapBufferSize),
         swapBuffer2(SwapBufferSize),
@@ -358,6 +406,11 @@ class FastqFileReader {
     }
   }
 
+	/**
+	 * @brief read data from first source file
+	 * @param memory_ pointer to store read file
+	 * @param size_ read size (byte)
+	 */
   int64 Read(byte *memory_, uint64 size_) {
     if (isZipped) {
       int64 n = gzread(mZipFile, memory_, size_);
@@ -369,6 +422,11 @@ class FastqFileReader {
     }
   }
 
+	/**
+	 * @brief read data from second source file in pair-end data 
+	 * @param memory_ pointer to store read file
+	 * @param size_ read size (byte)
+	 */
   int64 Read2(byte *memory_, uint64 size_) {
     if (isZipped) {
       int64 n = gzread(mZipFile, memory_, size_);  // TODO: mzipFile2
@@ -403,6 +461,12 @@ class FastqFileReader {
   uint64 GetNextRecordPos(uchar *data_, uint64 pos_, const uint64 size_);
   uint64 GetPreviousRecordPos(uchar *data_, uint64 pos_, const uint64 size_);
 
+	/**
+	 * @brief Skip to end of line
+	 * @param data_ base pointer
+	 * @param pos_ start position to skip
+	 * @param size_ data_ size
+	 */
   void SkipToEol(uchar *data_, uint64 &pos_, const uint64 size_) {
     // std::cout << "SkipToEol " << pos_ << " " << size_ << std::endl;
     ASSERT(pos_ < size_);
@@ -416,7 +480,12 @@ class FastqFileReader {
       }
     }
   }
-  // just to the start of a line
+	/**
+	 * @brief Skip to start of line
+	 * @param data_ base pointer
+	 * @param pos_ start position to skip
+	 * @param size_ data_ size
+	 */
   void SkipToSol(uchar *data_, uint64 &pos_, const uint64 size_) {
     // std::cout<<"SkipToSol:"<<data_[pos_]<<std::endl;
     ASSERT(pos_ < size_);

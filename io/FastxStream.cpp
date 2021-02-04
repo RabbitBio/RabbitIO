@@ -19,6 +19,10 @@ namespace rabbit {
 
 namespace fa {
 
+/**
+	@brief Read the next chunk
+	@return FastaChunk pointer if next chunk data has data, else return NULL
+ */
 FastaChunk *FastaFileReader::readNextChunk() {
   FastaDataChunk *part = NULL;
   recordsPool.Acquire(part);
@@ -33,10 +37,11 @@ FastaChunk *FastaFileReader::readNextChunk() {
   }
 }
 
-/*
-Description:
-  this function make sure one FastaChunk(dataPart) contains at least
-  one whole sequence, because
+/**
+ * @brief Read next listed chunk
+ * @details this function make sure one FastaChunk(dataPart) contains at least
+ * one whole sequence
+	@return FastaChunk pointer if next chunk data has data, else return NULL
 */
 FastaChunk *FastaFileReader::readNextChunkList() {
   FastaDataChunk *part = NULL;
@@ -225,7 +230,6 @@ bool find_next_seq_start(uchar *data, uint64 size, uint64 &pos_) {
   return data[pos_] == '>' ? true : false;
 }
 
-// bool FastaFileReader::ReadNextFaChunk(FastaChunk* dataChunk_, SeqInfos& seqInfos, bool &continue_read){
 bool FastaFileReader::ReadNextFaChunk(FastaDataChunk *chunk_, SeqInfos &seqInfos, bool &continue_read) {
   if (Eof()) {
     chunk_->size = 0;
@@ -335,6 +339,10 @@ void FastqFileReader::readChunk() {
   // recordsQueue.SetCompleted();
 }
 
+/**
+	@brief Read the next chunk
+	@return FastqChunk pointer if next chunk data has data, else return NULL
+ */
 FastqDataChunk *FastqFileReader::readNextChunk() {
   FastqDataChunk *part = NULL;
   recordsPool.Acquire(part);
@@ -346,6 +354,10 @@ FastqDataChunk *FastqFileReader::readNextChunk() {
   }
 }
 
+/**
+	@brief Read the next paired chunk
+	@return FastqDataPairChunk pointer if next chunk data has data, else return NULL
+ */
 FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
   FastqDataPairChunk *pair = new FastqDataPairChunk;
 
@@ -482,7 +494,6 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
   return pair;
 }
 
-// bool IFastqStreamReader::ReadNextChunk(FastqDataChunk* chunk_)
 bool FastqFileReader::ReadNextChunk(FastqDataChunk *chunk_) {
   if (Eof()) {
     chunk_->size = 0;
