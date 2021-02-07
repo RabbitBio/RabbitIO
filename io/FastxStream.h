@@ -148,9 +148,9 @@ class FastaFileReader {
 
   FastaChunk *readNextChunk();
   FastaChunk *readNextChunkList();
-  bool ReadNextChunk(FastaChunk *chunk_, SeqInfos &seqInfos);
-  bool ReadNextFaChunk(FastaChunk *chunk_, SeqInfos &seqInfos);
-  bool ReadNextFaChunk(FastaDataChunk *dataChunk_, SeqInfos &seqInfos, bool &continue_read);
+  bool ReadNextChunk_(FastaChunk *chunk_, SeqInfos &seqInfos);
+  bool ReadNextFaChunk_(FastaChunk *chunk_, SeqInfos &seqInfos);
+  bool ReadNextFaChunk_(FastaDataChunk *dataChunk_, SeqInfos &seqInfos, bool &continue_read);
 
 	/// close mFile
   void Close() {
@@ -202,7 +202,7 @@ class FastaFileReader {
   uint32 numParts;
 
  private:
-  uint64 FindCutPos(FastaChunk *dataChunk_, uchar *data_, const uint64 size_, const uint64 halo_, SeqInfos &seqInfos);
+  uint64 FindCutPos_(FastaChunk *dataChunk_, uchar *data_, const uint64 size_, const uint64 halo_, SeqInfos &seqInfos);
 
 	/**
 	 * @brief Skip to end of line
@@ -392,9 +392,9 @@ class FastqFileReader {
   // added from fastxIO.h
   FastqDataChunk *readNextChunk();
   void readChunk();
-  bool ReadNextChunk(FastqDataChunk *chunk_);
-  bool ReadNextPairedChunk(FastqDataChunk *chunk_);
+  bool ReadNextChunk_(FastqDataChunk *chunk_);
   FastqDataPairChunk *readNextPairChunk();
+  bool ReadNextPairedChunk_(FastqDataChunk *chunk_);
   void Close() {
     if (mFile != NULL) {
       FCLOSE(mFile);
@@ -458,8 +458,8 @@ class FastqFileReader {
   uint64 lastOneReadPos;
   uint64 lastTwoReadPos;
 
-  uint64 GetNextRecordPos(uchar *data_, uint64 pos_, const uint64 size_);
-  uint64 GetPreviousRecordPos(uchar *data_, uint64 pos_, const uint64 size_);
+  uint64 GetNextRecordPos_(uchar *data_, uint64 pos_, const uint64 size_);
+  uint64 GetPreviousRecordPos_(uchar *data_, uint64 pos_, const uint64 size_);
 
 	/**
 	 * @brief Skip to end of line

@@ -93,22 +93,21 @@ void print_fachunkpart_info(rabbit::fa::FastaChunk *fachunk) {
 }
 
 int producer_fasta_task(std::string file) {
-  rabbit::fa::FastaDataPool *fastaPool = new rabbit::fa::FastaDataPool();
+  rabbit::fa::FastaDataPool *fastaPool = new rabbit::fa::FastaDataPool(256, 1 << 22);
   rabbit::fa::FastaFileReader *faFileReader;
-  // rabbit::fq::FastqReader *fastqReader;
   faFileReader = new rabbit::fa::FastaFileReader(file, *fastaPool, false);
-  // fastqReader = new rabbit::fq::FastqReader(*fqFileReader, *fastqPool);
   int n_chunks = 0;
   int line_sum = 0;
   while (true) {
     rabbit::fa::FastaChunk *fachunk = new rabbit::fa::FastaChunk;
     fachunk = faFileReader->readNextChunkList();
-    // fachunk = faFileReader->readNextChunk();
+    //fachunk = faFileReader->readNextChunk();
     if (fachunk == NULL) break;
     n_chunks++;
+		//std::cout << n_chunks << std::endl;
     // line_sum += count_line(fqchunk);
-    std::vector<Reference> data;
-    // print_fachunkpart_info(fachunk);
+    //std::vector<Reference> data;
+    //print_fachunkpart_info(fachunk);
     //-----relaease
     rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
     do {
@@ -183,6 +182,10 @@ int test_fastq_se(int argc, char** argv){
   return 0;
 }
 
+int test_fasta(int argc, char** argv){
+	producer_fasta_task("/home/old_home/haoz/workspace/data/hg19/hg19.fa");
+	return 0;
+}
 inline void check_sucess(pfunc func, int argc, char** argv, std::string desc){
   std::cout << "runing " << desc << std::endl;
   if(func(argc, argv) == 0){
@@ -195,6 +198,7 @@ inline void check_sucess(pfunc func, int argc, char** argv, std::string desc){
 int main(int argc, char** argv){
   check_sucess(test_fastq_pe, argc, argv, "test fastq pair end");
   check_sucess(test_fastq_se, argc, argv, "test fastq single end");
+  check_sucess(test_fasta,    argc, argv, "test fasta process");
 }
 
 /*
