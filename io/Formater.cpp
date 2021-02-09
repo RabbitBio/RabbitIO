@@ -15,6 +15,12 @@ namespace rabbit {
 namespace fa {
 
 // FIXME:support enter = \n only
+/**
+ * @brief Get Sequence from chunk start at position
+ * @param chunk The data to get sequence from
+ * @param pos start postion at `chunk` data
+ * @return New sequence string if pos < chunk size, else return an empty string ("")
+ */
 string getSequence(FastaDataChunk *&chunk, uint64 &pos) {
   int start_pos = pos;
   char *data = (char *)chunk->data.Pointer();
@@ -48,6 +54,12 @@ string getSequence(FastaDataChunk *&chunk, uint64 &pos) {
 }
 
 // only support uinx-like '\n'
+/**
+ * @brief Get a new line from chunk start at position
+ * @param chunk The data to get line from
+ * @param pos start postion at `chunk` data
+ * @return New line string if pos < chunk size, else return an empty string ("")
+ */
 string getLine(FastaDataChunk *&chunk, uint64 &pos) {
   int start_pos = pos;
   char *data = (char *)chunk->data.Pointer();
@@ -64,6 +76,12 @@ string getLine(FastaDataChunk *&chunk, uint64 &pos) {
   return "";
 }
 
+/**
+ * @brief Format FASTA chunks into a vector os `Refenece` struct
+ * @param fachunk Source FASTA chunk data to format
+ * @param refs Destation vector to store at
+ * @return Total number of Reference instance in vector refs.
+ */
 int chunkFormat(FastaChunk &fachunk, vector<Reference> &refs) {
   uint64 pos = 0;
   bool done = false;
@@ -80,6 +98,13 @@ int chunkFormat(FastaChunk &fachunk, vector<Reference> &refs) {
 }
 
 // design to filter out kmer apps
+/**
+ * @brief Format FASTA chunks into a vector of `Refenece` struct (filter out sequence length < kmerSize)
+ * @param fachunk Source FASTA chunk data to format
+ * @param refs Destation vector to store at
+ * @param kmerSize Formated Reference's sequence length < kmerSize will be dropout
+ * @return Total number of Reference instance in vector refs.
+ */
 int chunkFormat(FastaChunk &fachunk, vector<Reference> &refs, int kmerSize) {
   uint64 pos = 0;
   bool done = false;
@@ -99,6 +124,15 @@ int chunkFormat(FastaChunk &fachunk, vector<Reference> &refs, int kmerSize) {
   return refs.size();
 }
 
+/**
+ * @brief Get next `Refenece` data
+ * @param fachunk Source FASTA chunk data to format
+ * @param done If reach the end of fachunk
+ * @param pos Start postion in fachunk to format
+ * @return A `Reference` instance start at pos in fachunk
+ * @note Because FASTA data do not contained quality and other information except sequence infomation, the `Sequence`
+         in FASTA equal to the `Reference` in FASTQ
+ */
 Reference getNextSeq(FastaChunk &fachunk, bool &done, uint64 &pos) {
   Reference ref;
   if (pos >= fachunk.chunk->size - 1) {
@@ -142,6 +176,13 @@ void print_read(neoReference &ref) {
   std::cout << std::string((char *)ref.base + ref.pqual, ref.lqual) << std::endl;
 }
 
+/**
+ * @brief Format FASTQ chunks into a vector of `neoRefenece` struct (no-copy format)
+ * @param fqchunk Source FASTQ chunk data to format
+ * @param data Destation vector to store at
+ * @param mHasQuality If the FASTQ data has quality infomation (default: true)
+ * @return Total number of neoReference instance in vector `data`.
+ */
 int chunkFormat(FastqChunk *&fqChunk, std::vector<neoReference> &data, bool mHasQuality = true) {
   FastqDataChunk *chunk = fqChunk->chunk;
   uint64_t seq_count = 0;
@@ -169,6 +210,13 @@ int chunkFormat(FastqChunk *&fqChunk, std::vector<neoReference> &data, bool mHas
   return seq_count;
 }
 
+/**
+ * @brief Format FASTQ chunks into a vector of `Refenece` struct (copy format)
+ * @param fqchunk Source FASTQ chunk data to format
+ * @param data Destation vector to store at
+ * @param mHasQuality If the FASTQ data has quality infomation (default: true)
+ * @return Total number of Reference instance in vector `data`.
+ */
 int chunkFormat(FastqChunk* &fqChunk, std::vector<Reference> &data, bool mHasQuality = true){
 	//format a whole chunk and return number of reads
 	FastqDataChunk * chunk = fqChunk->chunk;

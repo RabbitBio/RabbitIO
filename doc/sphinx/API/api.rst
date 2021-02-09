@@ -11,6 +11,22 @@ Buffer
 .. doxygenclass:: rabbit::core::Buffer
     :members:
 
+Sequencing data
+---------------
+
+.. doxygenstruct:: Reference
+    :members:
+    :private-members:
+    :undoc-members:
+
+.. doxygenstruct:: neoReference
+    :members:
+    :private-members:
+    :undoc-members:
+
+.. doxygentypedef:: OneSeqInfo
+
+.. doxygentypedef:: SeqInfos
 
 DataPool
 ----------
@@ -35,3 +51,9 @@ FastxChunk
 
 .. doxygenclass:: rabbit::fq::FastqFileReader
     :members:
+
+ChunkFormater
+-------------
+
+.. doxygenfile:: Formater.cpp
+  :project: RabbitIO

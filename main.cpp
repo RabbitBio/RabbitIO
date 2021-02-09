@@ -6,6 +6,13 @@
 #include "io/DataQueue.h"
 #include <thread>
 #include "io/Formater.h"
+#include <sys/time.h>
+
+double get_time(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (double)tv.tv_sec + (double)tv.tv_usec / 1000000;
+}
 
 typedef rabbit::core::TDataQueue<rabbit::fq::FastqDataPairChunk> FqChunkQueue;
 typedef int pfunc(int, char**);
@@ -188,11 +195,14 @@ int test_fasta(int argc, char** argv){
 }
 inline void check_sucess(pfunc func, int argc, char** argv, std::string desc){
   std::cout << "runing " << desc << std::endl;
+	double start_time = get_time();
   if(func(argc, argv) == 0){
-    std::cout << "["<< desc << "] runing sucess!" << std::endl;
+    std::cout << "["<< desc << "] runing sucess!";
   }else{
-    std::cout << "["<< desc << "] not sucess!" << std::endl;
+    std::cout << "["<< desc << "] not sucess!";
   }
+	double end_time = get_time();
+	std::cout << " time: " << end_time - start_time << " s" << std::endl;
 }
 
 int main(int argc, char** argv){
