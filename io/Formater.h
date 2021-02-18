@@ -38,6 +38,7 @@ namespace fq {
 
 int chunkFormat(FastqChunk *&chunk, std::vector<Reference> &, bool);
 int chunkFormat(FastqChunk *&chunk, std::vector<neoReference> &, bool);
+int chunkFormat(FastqDataChunk *fqChunk, std::vector<neoReference> &data, bool);
 
 std::string getLine(FastqDataChunk *&chunk, int &pos);
 int neoGetLine(FastqDataChunk *&chunk, uint64_t &pos, uint64_t &len);

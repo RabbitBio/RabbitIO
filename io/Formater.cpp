@@ -210,6 +210,33 @@ int chunkFormat(FastqChunk *&fqChunk, std::vector<neoReference> &data, bool mHas
   return seq_count;
 }
 
+int chunkFormat(FastqDataChunk *fqChunk, std::vector<neoReference> &data, bool mHasQuality = true) {
+  FastqDataChunk *chunk = fqChunk;
+  uint64_t seq_count = 0;
+  uint64_t line_count = 0;
+  uint64_t pos_ = 0;
+  neoReference ref;
+  while (true) {
+    ref.base = chunk->data.Pointer();
+    ref.pname = pos_;
+    if (neoGetLine(chunk, pos_, ref.lname)) {
+      ref.pseq = pos_;
+    } else {
+      break;
+    }
+    neoGetLine(chunk, pos_, ref.lseq);
+    ref.pstrand = pos_;
+    neoGetLine(chunk, pos_, ref.lstrand);
+    ref.pqual = pos_;
+    neoGetLine(chunk, pos_, ref.lqual);
+    seq_count++;
+    // print_read(ref);
+    data.emplace_back(ref);
+  }
+
+  return seq_count;
+}
+
 /**
  * @brief Format FASTQ chunks into a vector of `Refenece` struct (copy format)
  * @param fqchunk Source FASTQ chunk data to format

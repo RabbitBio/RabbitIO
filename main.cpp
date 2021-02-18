@@ -46,11 +46,11 @@ void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &
   rabbit::fq::FastqPairChunk *fqchunk = new rabbit::fq::FastqPairChunk;
   data.resize(10000);
   while (dq.Pop(id, fqchunk->chunk)) {
-    line_sum += 1000;
+		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqchunk->chunk->left_part), data, true);
+		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqchunk->chunk->right_part), data, true);
     fastqPool->Release(fqchunk->chunk->left_part);
     fastqPool->Release(fqchunk->chunk->right_part);
   }
-  std::cout << "line_sum: " << line_sum << std::endl;
 }
 
 int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDataQueue<rabbit::fq::FastqDataChunk> &dq){
@@ -131,9 +131,9 @@ int producer_fasta_task(std::string file) {
 }
 
 int test_fastq_pe(int argc, char **argv) {
-  std::string file1 = "/home/data/haoz/FD/bigr_2.fq";
+  std::string file1 = "/home/data/haoz/FD/bigr_1.fq";
   std::string file2 = "/home/data/haoz/FD/bigr_2.fq";
-  int th = 1;  // thread number
+  int th = 20;  // thread number
   rabbit::fq::FastqDataPool *fastqPool = new rabbit::fq::FastqDataPool(256, 1 << 22);
   FqChunkQueue queue1(128, 1);
   std::thread producer(producer_pe_fastq_task, file1, file2, fastqPool, std::ref(queue1));
