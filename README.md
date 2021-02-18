@@ -100,7 +100,7 @@ int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, 
   fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool);
   rabbit::int64 n_chunks = 0; 
   while(true){ 
-	rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
+    rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
     fqdatachunk = fqFileReader->readNextChunk(); 
     if (fqdatachunk == NULL) break;
     n_chunks++;
@@ -126,6 +126,12 @@ void consumer_fastq_task(rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDa
 }
 
 ```
+
+### Pair-end data processing example
+
+An example of processing Pair-end sequencing data is showed in file [TestCount.cpp](./TestCount.cpp).
+It is tested that compared to [FQReader](https://github.com/rob-p/FQFeeder), in the task of counting ATCG of pair-end data, RabbitIO is 2 times faster in 20 thread.
+
 RabbitIO is about 2G/s I/O speed now
 
 
