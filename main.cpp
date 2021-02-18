@@ -177,11 +177,11 @@ int test_fastq_se(int argc, char** argv){
   std::thread producer(producer_fastq_task, filename, fastqPool, std::ref(queue1));
   std::thread** threads = new std::thread*[th];
   for(int t = 0; t < th; t++){
-      threads[t] = new std::thread(std::bind(consumer_fastq_task, fastqPool, std::ref(queue1)));
+    threads[t] = new std::thread(std::bind(consumer_fastq_task, fastqPool, std::ref(queue1)));
   }
   producer.join();
   for(int t = 0; t < th; t++){
-      threads[t]->join();
+    threads[t]->join();
   }
   //-----freee
   delete fastqPool;

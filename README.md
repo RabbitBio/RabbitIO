@@ -1,9 +1,16 @@
 ![RabbitIO](rabbitio.png)
 
-RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
+# RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
 
+## Installation
 
-## Example 
+## Case study
+
+- [RabbitTrim]()
+- [RabbitQC]()
+- [RabbitIO-MashScreen]()
+
+## Runing Example in main.cpp and TestCount.cpp
 
 ``` bash 
 cd RabbitIO
@@ -12,6 +19,7 @@ cmake ..
 make
 #then there is an test file in build file
 time ./test 
+time ./testcount
 ```
 
 ## FASTA data example 
@@ -47,12 +55,11 @@ int proces_fasta_task(std::string file) {
 
 ### Single-end data processing example
 
-1. example of define a mult-threading task
+1. Example of define a mult-threading task
 
 ``` c++
 int test_fastq_se(int argc, char** argv){
-  std::string file = "/home/old_home/haoz/workspace/QC/fastp_dsrc/out_1.fq";
-  //std::string file = "/home/old_home/haoz/workspace/data/hg19/hg19.fa";
+  std::string file = "/home/old_home/haoz/workspace/QC/out_1.fq";
   //---------------cmd parser----------------
   CLI::App app{"Wellcome to RabbitIO"};
   CLI::Option* opt;
@@ -74,11 +81,11 @@ int test_fastq_se(int argc, char** argv){
   std::thread producer(producer_fastq_task, filename, fastqPool, std::ref(queue1));
   std::thread** threads = new std::thread*[th];
   for(int t = 0; t < th; t++){
-      threads[t] = new std::thread(std::bind(consumer_fastq_task, fastqPool, std::ref(queue1)));
+    threads[t] = new std::thread(std::bind(consumer_fastq_task, fastqPool, std::ref(queue1)));
   }
   producer.join();
   for(int t = 0; t < th; t++){
-      threads[t]->join();
+    threads[t]->join();
   }
   //-----free
   delete fastqPool;
@@ -93,7 +100,7 @@ int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, 
   fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool);
   rabbit::int64 n_chunks = 0; 
   while(true){ 
-		rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
+	rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
     fqdatachunk = fqFileReader->readNextChunk(); 
     if (fqdatachunk == NULL) break;
     n_chunks++;
@@ -109,14 +116,20 @@ void consumer_fastq_task(rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDa
     long line_sum = 0;
     rabbit::int64 id = 0;
     std::vector<neoReference> data;
-		rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
+	rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
     data.resize(10000);
     while(dq.Pop(id, fqdatachunk)){
-        line_sum += rabbit::fq::chunkFormat(fqdatachunk, data, true);
-        fastqPool->Release(fqdatachunk);
+      line_sum += rabbit::fq::chunkFormat(fqdatachunk, data, true);
+      fastqPool->Release(fqdatachunk);
     }
     std::cout << "line_sum: " << line_sum << std::endl;
 }
 
 ```
 RabbitIO is about 2G/s I/O speed now
+
+
+## TODO
+
+- [ ] support sam/bam file process
+- [ ] support vcf file process
