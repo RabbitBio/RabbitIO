@@ -21,8 +21,12 @@ add_subdirectory(io)
 #message(${SOURCE_LIST})
 #include_directories(./src)
 
+add_executable (testcount TestCount.cpp)
 add_executable (test main.cpp)
 #add_executable (RabbitIO ${SOURCE_LIST})
 
 target_link_libraries(test z)
 target_link_libraries(test io_lib)
+
+target_link_libraries(testcount z)
+target_link_libraries(testcount io_lib)
