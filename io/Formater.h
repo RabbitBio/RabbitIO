@@ -36,9 +36,10 @@ Reference getNextSeq(FastaChunk &fachunk, bool &done, uint64 &pos);
 
 namespace fq {
 
-int chunkFormat(FastqChunk *&chunk, std::vector<Reference> &, bool);
-int chunkFormat(FastqChunk *&chunk, std::vector<neoReference> &, bool);
+int chunkFormat(FastqChunk *chunk, std::vector<Reference> &, bool);
+int chunkFormat(FastqChunk *chunk, std::vector<neoReference> &, bool);
 int chunkFormat(FastqDataChunk *fqChunk, std::vector<neoReference> &data, bool);
+int chunkFormat(FastqDataChunk *fqChunk, std::vector<Reference> &data, bool);
 
 std::string getLine(FastqDataChunk *&chunk, int &pos);
 int neoGetLine(FastqDataChunk *&chunk, uint64_t &pos, uint64_t &len);

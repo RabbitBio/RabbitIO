@@ -25,12 +25,12 @@ int producer_pe_fastq_task(std::string file, std::string file2, rabbit::fq::Fast
   int n_chunks = 0;
   int line_sum = 0;
   while (true) {
-    rabbit::fq::FastqPairChunk *fqchunk = new rabbit::fq::FastqPairChunk;
-    fqchunk->chunk = fqFileReader->readNextPairChunk();
-    if (fqchunk->chunk == NULL) break;
+    rabbit::fq::FastqDataPairChunk *fqdatachunk = new rabbit::fq::FastqDataPairChunk;
+    fqdatachunk = fqFileReader->readNextPairChunk();
+    if (fqdatachunk == NULL) break;
     n_chunks++;
     //std::cout << "readed chunk: " << n_chunks << std::endl;
-    dq.Push(n_chunks, fqchunk->chunk);
+    dq.Push(n_chunks, fqdatachunk);
   }
 
   dq.SetCompleted();
@@ -43,13 +43,13 @@ void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &
   long line_sum = 0;
   rabbit::int64 id = 0;
   std::vector<neoReference> data;
-  rabbit::fq::FastqPairChunk *fqchunk = new rabbit::fq::FastqPairChunk;
+  rabbit::fq::FastqDataPairChunk *fqdatachunk = new rabbit::fq::FastqDataPairChunk;
   data.resize(10000);
-  while (dq.Pop(id, fqchunk->chunk)) {
-		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqchunk->chunk->left_part), data, true);
-		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqchunk->chunk->right_part), data, true);
-    fastqPool->Release(fqchunk->chunk->left_part);
-    fastqPool->Release(fqchunk->chunk->right_part);
+  while (dq.Pop(id, fqdatachunk)) {
+		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqdatachunk->left_part), data, true);
+		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqdatachunk->right_part), data, true);
+    fastqPool->Release(fqdatachunk->left_part);
+    fastqPool->Release(fqdatachunk->right_part);
   }
 }
 
@@ -58,12 +58,12 @@ int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, 
   fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool);
   rabbit::int64 n_chunks = 0; 
   while(true){ 
-    rabbit::fq::FastqChunk *fqchunk = new rabbit::fq::FastqChunk; 
-    fqchunk->chunk = fqFileReader->readNextChunk(); 
-    if (fqchunk->chunk == NULL) break;
+		rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
+    fqdatachunk = fqFileReader->readNextChunk(); 
+    if (fqdatachunk == NULL) break;
     n_chunks++;
     //std::cout << "readed chunk: " << n_chunks << std::endl;
-    dq.Push(n_chunks, fqchunk->chunk);
+    dq.Push(n_chunks, fqdatachunk);
   }
   dq.SetCompleted();
   std::cout << "file " << file << " has " << n_chunks << " chunks" << std::endl;
@@ -74,11 +74,11 @@ void consumer_fastq_task(rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDa
     long line_sum = 0;
     rabbit::int64 id = 0;
     std::vector<neoReference> data;
-    rabbit::fq::FastqChunk *fqchunk = new rabbit::fq::FastqChunk;
+		rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
     data.resize(10000);
-    while(dq.Pop(id, fqchunk->chunk)){
-        line_sum += rabbit::fq::chunkFormat(fqchunk, data, true);
-        fastqPool->Release(fqchunk->chunk);
+    while(dq.Pop(id, fqdatachunk)){
+        line_sum += rabbit::fq::chunkFormat(fqdatachunk, data, true);
+        fastqPool->Release(fqdatachunk);
     }
     std::cout << "line_sum: " << line_sum << std::endl;
 }
