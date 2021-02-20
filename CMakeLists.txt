@@ -22,7 +22,7 @@ add_subdirectory(io)
 #include_directories(./src)
 
 add_executable (testcount TestCount.cpp)
-add_executable (test main.cpp)
+add_executable (test Examples.cpp)
 #add_executable (RabbitIO ${SOURCE_LIST})
 
 target_link_libraries(test z)
