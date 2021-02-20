@@ -22,35 +22,6 @@ time ./test
 time ./testcount
 ```
 
-## FASTA data example 
-this is an example of reading and processing FASTA file
-
-- example code of using only one thread (count chunk number of input file):
-``` c++
-int proces_fasta_task(std::string file) {
-  rabbit::fa::FastaDataPool *fastaPool = new rabbit::fa::FastaDataPool(256, 1 << 22);
-  rabbit::fa::FastaFileReader *faFileReader;
-  faFileReader = new rabbit::fa::FastaFileReader(file, *fastaPool, false);
-  int n_chunks = 0;
-  int line_sum = 0;
-  while (true) {
-    rabbit::fa::FastaChunk *fachunk = new rabbit::fa::FastaChunk;
-    fachunk = faFileReader->readNextChunkList();
-    if (fachunk == NULL) break;
-    n_chunks++;
-    //-----relaease
-    rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
-    do {
-      fastaPool->Release(tmp);
-      tmp = tmp->next;
-    } while (tmp != NULL);
-    // line_sum += rabbit::fa::chunkFormat(*fachunk, data);
-  }
-  std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
-  return 0;
-}
-```
-
 ## FASTQ data example 
 
 ### Single-end data processing example
@@ -133,6 +104,40 @@ An example of processing Pair-end sequencing data is showed in file [TestCount.c
 It is tested that compared to [FQReader](https://github.com/rob-p/FQFeeder), in the task of counting ATCG of pair-end data, RabbitIO is 2 times faster in 20 thread.
 
 RabbitIO is about 2G/s I/O speed now
+
+## FASTA data example 
+this is an example of reading and processing FASTA file
+
+- example code of using only one thread (count chunk number of input file):
+``` c++
+int proces_fasta_task(std::string file) {
+  rabbit::fa::FastaDataPool *fastaPool = new rabbit::fa::FastaDataPool(256, 1 << 22);
+  rabbit::fa::FastaFileReader *faFileReader;
+  faFileReader = new rabbit::fa::FastaFileReader(file, *fastaPool, false);
+  int n_chunks = 0;
+  int line_sum = 0;
+  while (true) {
+    rabbit::fa::FastaChunk *fachunk = new rabbit::fa::FastaChunk;
+    fachunk = faFileReader->readNextChunkList();
+    if (fachunk == NULL) break;
+    n_chunks++;
+    //-----relaease
+    rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
+    do {
+      fastaPool->Release(tmp);
+      tmp = tmp->next;
+    } while (tmp != NULL);
+    // line_sum += rabbit::fa::chunkFormat(*fachunk, data);
+  }
+  std::cout << "file " << file << " has " << line_sum << " lines" << std::endl;
+  return 0;
+}
+
+int test_fasta(int argc, char** argv){
+  producer_fasta_task("/home/old_home/haoz/workspace/data/hg19/hg19.fa");
+  return 0;
+}
+```
 
 
 ## TODO

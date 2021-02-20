@@ -193,6 +193,7 @@ int test_fasta(int argc, char** argv){
 	producer_fasta_task("/home/old_home/haoz/workspace/data/hg19/hg19.fa");
 	return 0;
 }
+
 inline void check_sucess(pfunc func, int argc, char** argv, std::string desc){
   std::cout << "runing " << desc << std::endl;
 	double start_time = get_time();

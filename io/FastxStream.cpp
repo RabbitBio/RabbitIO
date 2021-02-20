@@ -41,7 +41,7 @@ FastaChunk *FastaFileReader::readNextChunk() {
  * @brief Read next listed chunk
  * @details this function make sure one FastaChunk(dataPart) contains at least
  * one whole sequence
-	@return FastaChunk pointer if next chunk data has data, else return NULL
+ * @return FastaChunk pointer if next chunk data has data, else return NULL
 */
 FastaChunk *FastaFileReader::readNextChunkList() {
   FastaDataChunk *part = NULL;
@@ -153,7 +153,7 @@ uint64 FastaFileReader::FindCutPos_(FastaChunk *dataChunk_, uchar *data_, const 
   uint64 lastName_ = 0;  //-> the last '>'
   OneSeqInfo seqInfo;
 
-  //dataChunk_ -> start and ataChunk_ -> end means start index and end index of current chunk
+  //dataChunk_ -> start and dataChunk_ -> end means start index and end index of current chunk
   if (data_[0] == '>')  // start with '>'
   {
     dataChunk_->start = this->totalSeqs;
