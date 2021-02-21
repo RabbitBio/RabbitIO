@@ -4,6 +4,13 @@
 
 ## Installation
 
+## Highlight
+ + RabbitIO highly support multi-core paltform
+ + RabbitIO efficiency processing FASTQ/FASTA files
+ + Concurrency data pool and data queue.
+ + Non-copy read format
+ + Bit-based sequencing processing
+
 ## Case study
 
 - [RabbitTrim]()
@@ -21,6 +28,8 @@ make
 time ./test 
 time ./testcount
 ```
+
+**Note:** We integtated [CLI](https://github.com/CLIUtils/CLI11) as default command line patser for user convenience
 
 ## FASTQ data example 
 
@@ -142,5 +151,6 @@ int test_fasta(int argc, char** argv){
 
 ## TODO
 
+- [ ] Is it possable to make RabbitIO header only??
 - [ ] support sam/bam file process
 - [ ] support vcf file process
