@@ -32,19 +32,19 @@ Copy `include/RabbitIO.h` to your include file, then you can use all functions i
 
 ## Runing Example in main.cpp and TestCount.cpp
 
-``` bash 
+``` bash
 cd RabbitIO
 mkdir build && cd build
 cmake ..
 make
 #then there is an test file in build file
-time ./test 
+time ./test
 time ./testcount
 ```
 
 **Note:** We integtated [CLI](https://github.com/CLIUtils/CLI11) as default command line patser for user convenience
 
-## FASTQ data example 
+## FASTQ data example
 
 ### Single-end data processing example
 
@@ -91,10 +91,10 @@ int test_fastq_se(int argc, char** argv){
 int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDataQueue<rabbit::fq::FastqDataChunk> &dq){
   rabbit::fq::FastqFileReader *fqFileReader;
   fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool);
-  rabbit::int64 n_chunks = 0; 
-  while(true){ 
+  rabbit::int64 n_chunks = 0;
+  while(true){
     rabbit::fq::FastqDataChunk* fqdatachunk;// = new rabbit::fq::FastqDataChunk;
-    fqdatachunk = fqFileReader->readNextChunk(); 
+    fqdatachunk = fqFileReader->readNextChunk();
     if (fqdatachunk == NULL) break;
     n_chunks++;
     //std::cout << "readed chunk: " << n_chunks << std::endl;
@@ -127,7 +127,7 @@ It is tested that compared to [FQReader](https://github.com/rob-p/FQFeeder), in 
 
 RabbitIO is about 2G/s I/O speed now
 
-## FASTA data example 
+## FASTA data example
 this is an example of reading and processing FASTA file
 
 - example code of using only one thread (count chunk number of input file):

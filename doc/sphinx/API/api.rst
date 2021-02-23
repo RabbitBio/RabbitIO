@@ -34,6 +34,9 @@ DataPool
 .. doxygenclass:: rabbit::core::TDataPool
     :members:
 
+DataQueue
+----------
+
 FastxChunk
 ----------
 
