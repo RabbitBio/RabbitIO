@@ -5,7 +5,7 @@
 ## Installation
 ### Dependency
  1. c++11
- 2. (zlib)[https://zlib.net/]
+ 2. [zlib](https://zlib.net/)
 ### Using Cmake (recommend)
 Copy folder io to your program, and then
 you can integrate RabbitIO in your `CMakeLists.txt`:
@@ -23,6 +23,10 @@ Copy `include/RabbitIO.h` to your include file, then you can use all functions i
  + Concurrency data pool and data queue.
  + Non-copy read format
  + Bit-based sequencing processing
+
+## Illustration
+
+ ![Pipeline](pipeline.png)
 
 ## Case study
 
@@ -165,6 +169,7 @@ int test_fasta(int argc, char** argv){
 ## TODO
 
 - [ ] Is it possable to make RabbitIO header only??
+- [ ] Add doxygen site
 - [X] MacOS support ??
 - [ ] support sam/bam file process
 - [ ] support vcf file process
