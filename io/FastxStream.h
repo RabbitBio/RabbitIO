@@ -35,6 +35,7 @@
 #define FCLOSE fclose
 #elif __APPLE__  // Apple by default suport 64 bit file operations (Darwin 10.5+)
 #define FOPEN fopen
+#define FDOPEN fdopen
 #define FSEEK fseek
 #define FTELL ftell
 #define FCLOSE fclose
@@ -298,7 +299,7 @@ class FastqFileReader {
  public:
 	/**
 	 * @brief FastaFileReader Constructor
-	 * @param fileName_ Fastq file name 
+	 * @param fileName_ Fastq file name
 	 * @param pool_ Data pool
 	 * @param fileName2_ the second file name if source file is pair-end sequence
 	 * @param isZippedNew if true, it will use gzopen to read fileName_ and fileName2_
@@ -340,7 +341,7 @@ class FastqFileReader {
 
 	/**
 	 * @brief FastaFileReader Constructor
-	 * @param fileName_ Fastq file descriptor 
+	 * @param fileName_ Fastq file descriptor
 	 * @param pool_ Data pool
 	 * @param fileName2_ the second file descriptor if source file is pair-end sequence
 	 * @param isZippedNew if true, it will use gzopen to read fd and fd2
@@ -423,7 +424,7 @@ class FastqFileReader {
   }
 
 	/**
-	 * @brief read data from second source file in pair-end data 
+	 * @brief read data from second source file in pair-end data
 	 * @param memory_ pointer to store read file
 	 * @param size_ read size (byte)
 	 */
