@@ -11,8 +11,6 @@
 #ifndef H_FASTQSTREAM
 #define H_FASTQSTREAM
 
-//#include "../Sketch.h"
-
 #include "Globals.h"
 
 #include "Buffer.h"
