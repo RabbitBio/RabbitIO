@@ -97,7 +97,6 @@ class FastaFileReader {
 
     } else {
       mFile = FOPEN(fileName_.c_str(), "rb");
-      std::cerr << "fasta file name: " << fileName_.c_str() << std::endl;
       if (mFile == NULL) {
         throw RioException(
           ("Can not open file to read: " + fileName_).c_str());  //--------------need to change----------//

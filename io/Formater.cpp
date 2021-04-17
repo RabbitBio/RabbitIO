@@ -92,7 +92,7 @@ int chunkFormat(FastaChunk &fachunk, vector<Reference> &refs) {
     refs.push_back(ref);
   }
 
-  ASSERT(refs.size() == fachunk.nseqs);
+  //ASSERT(refs.size() == fachunk.nseqs);
 
   return refs.size();
 }
@@ -140,7 +140,7 @@ Reference getNextSeq(FastaChunk &fachunk, bool &done, uint64 &pos) {
     return ref;
   }
 
-  char *data = (char *)fachunk.chunk->data.Pointer();
+  const char *data = (char *)fachunk.chunk->data.Pointer();
 
   // while(data[pos] == '\n') pos++;//jump empty lines
 

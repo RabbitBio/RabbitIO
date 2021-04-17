@@ -31,7 +31,6 @@ FastaChunk *FastaFileReader::readNextChunk() {
   if (ReadNextChunk_(dataPart, this->seqInfos)) {
     return dataPart;
   } else {
-    std::cout << "read over!" << std::endl;
     recordsPool.Release(part);
     return NULL;
   }
