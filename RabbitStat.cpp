@@ -98,8 +98,9 @@ int main(int argc, char **argv) {
   //std::string file1 = "/home/old_home/haoz/workspace/data/hg38/hg38.fa";
   std::string filename;
   int th;  // thread number
-  app.add_option("-f, --file", filename, "input file name")
-		->required();
+  app.add_option("file", filename, "input file name")->required();
+		//app.add_option("-f, --file", filename, "input file name")
+		//	->required();
   app.add_option("-t, --threads", th, "worktreads")
     ->default_val(4);
   //----------------------------------------
