@@ -30,14 +30,13 @@ struct Counter{
 typedef rabbit::core::TDataQueue<rabbit::fa::FastaChunk> FaChunkQueue;
 
 int producer_fasta_task(std::string file, rabbit::fa::FastaDataPool* fastaPool, FaChunkQueue &dq) {
-  //rabbit::fa::FastaDataPool *fastaPool = new rabbit::fa::FastaDataPool(256, 1 << 22);
   rabbit::fa::FastaFileReader *faFileReader;
   faFileReader = new rabbit::fa::FastaFileReader(file, *fastaPool, false);
   int n_chunks = 0;
   while (true) {
     rabbit::fa::FastaChunk *fachunk = new rabbit::fa::FastaChunk;
-    //fachunk = faFileReader->readNextChunkList();
-    fachunk = faFileReader->readNextChunk();
+    fachunk = faFileReader->readNextChunkList();
+    //fachunk = faFileReader->readNextChunk();
     if (fachunk == NULL) break;
     n_chunks++;
 		dq.Push(n_chunks, fachunk);
@@ -59,48 +58,39 @@ void consumer_fasta_task(rabbit::fa::FastaDataPool *fastaPool,  FaChunkQueue &dq
 	while (dq.Pop(id, fachunk)) {
 		//rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
     std::vector<Reference> data;
-    int ref_num = rabbit::fa::chunkFormat(*fachunk, data);
+    int ref_num = rabbit::fa::chunkListFormat(*fachunk, data);
 		for(Reference &r: data){
-			//count length
-			//std::cout << "ref num: " << ref_num << " reference global id: " << r.gid << " name: " << r.name
-			//					<< " length: " << r.length << " seq size: " << r.seq.length() << std::endl;
-			gid2len[r.gid] += r.length;
-			gid2name[r.gid] += r.name;
       //count ATGC
+			//---------------------
+			std::cout << "name: " << r.name << ", length: "<< r.length << std::endl;
+			//----------------------
 			const char* base = r.seq.c_str();
-			for(int i = 0; i < r.length; i++){
+			for(long i = 0; i < r.seq.length(); i++){
 				switch(base[i]){
-				case 'A':
-					counter->A++; break;
-				case 'T':
-					counter->T++; break;
-				case 'G':
-					counter->G++; break;
-				case 'C':
-					counter->C++; break;
-				default:
-					break;
+				case 'A': counter->A++; break;
+				case 'T': counter->T++; break;
+				case 'G': counter->G++; break;
+				case 'C': counter->C++; break;
+				default: break;
 				}
 			}
 		}
     //-----relaease
 		rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
-    do {
+		while (tmp != NULL){
       fastaPool->Release(tmp);
       tmp = tmp->next;
-    } while (tmp != NULL);
+    } 
   }
 }
 
 int main(int argc, char **argv) {
-  CLI::App app{"Wellcome to RabbitIO"};
+  CLI::App app{"Wellcome to RabbitStat"};
   CLI::Option* opt;
   //std::string file1 = "/home/old_home/haoz/workspace/data/hg38/hg38.fa";
   std::string filename;
   int th;  // thread number
   app.add_option("file", filename, "input file name")->required();
-		//app.add_option("-f, --file", filename, "input file name")
-		//	->required();
   app.add_option("-t, --threads", th, "worktreads")
     ->default_val(4);
   //----------------------------------------
@@ -134,11 +124,6 @@ int main(int argc, char **argv) {
 			global_g2n[x.first] += x.second;
 		}
 	}
-	for(int i = 0; i < global_g2l.size(); i++){
-		std::cout << global_g2n[i]<< " - " << global_g2l[i] << std::endl;
-	}
-	//std::cout << "total length: " << sum_length << std::endl;
-	//std::cout << "ATCG infromatic: " << ca << " " << ct << " " << cc << " " << cg << std::endl;
 	printf("A:%ld, T:%ld, C:%ld, G:%ld\n", ca, ct, cc, cg);
   delete fastaPool;
   for (int t = 0; t < th; t++) {
