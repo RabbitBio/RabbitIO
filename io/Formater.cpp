@@ -64,7 +64,7 @@ string getLine(FastaDataChunk *&chunk, uint64 &pos) {
   int start_pos = pos;
   char *data = (char *)chunk->data.Pointer();
 
-  while (pos < chunk->size) {
+  while (pos <= chunk->size) {
     if (data[pos] == '\n') {
       pos++;
       return string(data + start_pos, pos - start_pos - 1);
@@ -73,9 +73,56 @@ string getLine(FastaDataChunk *&chunk, uint64 &pos) {
     }
   }
 
-  return "";
+  //return "";
+	//std::cout << "end line: " << string(data + start_pos, pos - start_pos) << std::endl;
+	return string(data + start_pos, pos - start_pos);
 }
 
+/**
+ * @brief Format FASTA chunks(listed) into a vector os `Refenece` struct
+ * @param fachunk Source FASTA chunk data to format
+ * @param refs Destation vector to store at
+ * @return Total number of Reference instance in vector refs.
+ */
+int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
+	auto & tmp = fachunk.chunk;
+	Reference *current = NULL; 
+	do{
+		uint64 pos = 0;
+		bool done = false;
+		const char *data = (char *)tmp->data.Pointer();
+		//doneone = false;
+		while(true){
+			if (pos > tmp->size) break;
+			std::string line = getLine(tmp, pos);
+			if (line[0] == '>'){
+				if(current){
+					current->length = current->seq.length();
+					refs.push_back(*current);
+					delete current;
+				}
+				current = new Reference();
+				int str_pos = line.find_first_of(' ');
+				current->name = line.substr(1, str_pos - 1);  // remove '>' and ' '
+				if (str_pos < line.size()) current->comment = line.substr(str_pos + 1);
+				current->gid = fachunk.start;
+				current->seq = "";
+				fachunk.start++;
+				
+			}else{
+				current->seq += line;
+			}
+		}
+		tmp = tmp -> next;
+	}while(tmp != NULL);
+
+	if(current){
+		current->length = current->seq.length();
+		refs.push_back(*current);
+	}
+
+  return refs.size();
+}
 /**
  * @brief Format FASTA chunks into a vector os `Refenece` struct
  * @param fachunk Source FASTA chunk data to format
