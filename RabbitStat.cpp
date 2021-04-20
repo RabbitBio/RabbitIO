@@ -57,24 +57,32 @@ void consumer_fasta_task(rabbit::fa::FastaDataPool *fastaPool,  FaChunkQueue &dq
   rabbit::fa::FastaChunk *fachunk;// = new rabbit::fa::FastaChunk;
 	while (dq.Pop(id, fachunk)) {
 		//rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
-    std::vector<Reference> data;
-    int ref_num = rabbit::fa::chunkListFormat(*fachunk, data);
-		for(Reference &r: data){
-      //count ATGC
-			//---------------------
-			std::cout << "name: " << r.name << ", length: "<< r.length << std::endl;
-			//----------------------
-			const char* base = r.seq.c_str();
-			for(long i = 0; i < r.seq.length(); i++){
-				switch(base[i]){
-				case 'A': counter->A++; break;
-				case 'T': counter->T++; break;
-				case 'G': counter->G++; break;
-				case 'C': counter->C++; break;
-				default: break;
-				}
-			}
-		}
+    std::vector<neoReference*> data;
+    //int ref_num = rabbit::fa::chunkListFormat(*fachunk, data);
+		//for(neoReference* r: data){
+    //  //count ATGC
+		//	//---------------------
+		//	uint64_t length = 0;
+		//	std::cout << "name: " << std::string((char*)r->base + r->pname, r->lname);
+		//	//----------------------
+		//	//const char* base = r.seq.c_str();
+		//	neoReference* curr = r;
+		//	while(curr){
+		//		char* base = (char*)curr->base + curr->pseq;
+		//		length += curr->lseq;
+		//		//for(uint64_t i = 0; i < curr->lseq; i++){
+		//		//	switch(base[i]){
+		//		//	case 'A': counter->A++; break;
+		//		//	case 'T': counter->T++; break;
+		//		//	case 'G': counter->G++; break;
+		//		//	case 'C': counter->C++; break;
+		//		//	default: break;
+		//		//	}
+		//		//}
+		//	curr = curr->next;
+		//	}
+		//	std::cout << ", length: "<< length << std::endl;
+		//}
     //-----relaease
 		rabbit::fa::FastaDataChunk *tmp = fachunk->chunk;
 		while (tmp != NULL){

@@ -36,6 +36,7 @@ struct neoReference {
   uint64_t lstrand; /// length of strand
   uint64_t gid;     /// global id
   rabbit::byte *base; /// base data pointer
+	neoReference *next = NULL; /// next data chunk start
 };
 
 /// Sequence infomations, only for FASTA data

@@ -123,6 +123,57 @@ int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
 
   return refs.size();
 }
+void inline skip2eol(const char* data, uint64 &pos_, uint64 size){
+	while(pos_ < size && data[pos_] != '\n'){
+		pos_++;
+	}
+}
+int chunkListFormat(FastaChunk &fachunk, vector<neoReference*> &refs) {
+	auto & tmp = fachunk.chunk;
+	neoReference *current = NULL, *ref = NULL; 
+	do{
+		uint64 pos = 0;
+		bool done = false;
+		const char *data = (char *)tmp->data.Pointer();
+		//doneone = false;
+		uint64_t ss = tmp->size;
+		while(pos <= ss){
+			//std::string line = getLine(tmp, pos);
+			if (data[pos] == '>'){
+				if(ref){
+					//current->length = current->seq.length();
+					refs.push_back(ref);
+					//delete current;
+				}
+				ref = new neoReference();
+				current = ref;
+				current->base = tmp->data.Pointer();
+				//int str_pos = line.find_first_of(' ');
+				current->pname = pos + 1;  // remove '>' and ' '
+				skip2eol(data, pos, tmp->size + 1);
+				current->lname = pos - current->pname;// remove '>' and ' '
+				pos++; //TODO add comment information;
+
+				current->pseq = pos; current->lseq = 1;
+				
+			}else{
+				current->lseq ++;
+				pos++;
+			}
+		}
+		tmp = tmp -> next;
+		if(tmp){
+			current -> next = new neoReference(); current = current -> next;
+			current-> base = tmp->data.Pointer(); current -> lseq = 0; current -> pseq = 0;
+		}
+	}while(tmp != NULL);
+
+	if(ref){
+		refs.push_back(ref);
+	}
+
+  return refs.size();
+}
 /**
  * @brief Format FASTA chunks into a vector os `Refenece` struct
  * @param fachunk Source FASTA chunk data to format
