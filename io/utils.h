@@ -150,6 +150,24 @@ inline uint32 bit_length(uint64 x) {
   return 64;
 }
 
+uint64_t seq2int(const char* data, int start, int keylen, bool& valid) {
+	uint8_t mask = 0x06; //FIXME: not general only works for DNA sequences, it's just a trick.
+	uint64_t res = 0;
+	int end = start + keylen;
+	for(int i = start; i < end; i++)
+	{
+		uint8_t meri = (uint8_t)data[i];
+        if(data[i] == 'N'){
+            valid = 0;
+            return 0;
+        }
+		meri &= mask;
+		meri >>= 1;
+		res |= (uint64_t)meri;
+		res <<= 2;
+	}
+	return res >> 2;
+}
 }  // namespace core
 
 }  // namespace rabbit
