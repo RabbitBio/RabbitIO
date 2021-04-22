@@ -32,7 +32,7 @@ struct neoReference {
   uint64_t lname;   /// length of name
   uint64_t lcom;    /// length of comment
   uint64_t lseq;    /// length of sequence
-	// uint64_t lqual;   /// length of quality (not needed)
+	uint64_t lqual;   /// length of quality
   uint64_t lstrand; /// length of strand
   uint64_t gid;     /// global id
   rabbit::byte *base; /// base data pointer
