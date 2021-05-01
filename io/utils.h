@@ -150,17 +150,17 @@ inline uint32 bit_length(uint64 x) {
   return 64;
 }
 
-uint64_t seq2int(const char* data, int start, int keylen, bool& valid) {
-	uint8_t mask = 0x06; //FIXME: not general only works for DNA sequences, it's just a trick.
+inline uint64_t seq2int(const char* data, int start, int keylen, bool& valid) {
+	uint8_t mask = 0x06; //not general only works for DNA sequences, it's just a trick.
 	uint64_t res = 0;
-	int end = start + keylen;
+	const int end = start + keylen;
 	for(int i = start; i < end; i++)
 	{
 		uint8_t meri = (uint8_t)data[i];
-        if(data[i] == 'N'){
-            valid = 0;
-            return 0;
-        }
+    if(data[i] == 'N'){
+        valid = 0;
+        return 0;
+    }
 		meri &= mask;
 		meri >>= 1;
 		res |= (uint64_t)meri;
@@ -168,6 +168,49 @@ uint64_t seq2int(const char* data, int start, int keylen, bool& valid) {
 	}
 	return res >> 2;
 }
+
+const int revmap[4] = {2,3,0,1};
+//NOTICE: ensure there is no 'N' in key
+inline uint64_t kmer_reverse_complete(uint64_t key, int keylen){
+ 	uint64_t res;
+ 	for(int i = 0; i < keylen; ++i){
+ 		res | revmap[key & 0x03];
+ 		res << 2;
+ 		key >> 2;
+ 	}
+ 	return res;
+}
+//^0x02 -> complete
+void reverse_complement(const char * src, char * dest, int length)
+{
+  char table[4] = {'T','G','A','C'};
+  for ( int i = 0; i < length; i++ )
+  {
+    char base = src[i];
+
+    base >>= 1;
+    base &= 0x03;
+    dest[length - i - 1] = table[base];
+  }
+}
+
+inline void seq_to_lower(char* seq, size_t len){
+  for(int i = 0; i < len; ++i)
+    seq[i] |= 0x20;
+}
+inline void seq_to_upper(char* seq, size_t len){
+  for(int i = 0; i < len; ++i)
+    seq[i] &= 0xdf;
+}
+inline void seq_to_lower(std::string &seq){
+  for(char &c : seq)
+    c |= 0x20;
+}
+inline void seq_to_upper(std::string &seq){
+  for(char &c : seq)
+    c &= 0xdf;
+}
+
 }  // namespace core
 
 }  // namespace rabbit
