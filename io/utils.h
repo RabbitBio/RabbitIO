@@ -181,7 +181,7 @@ inline uint64_t kmer_reverse_complete(uint64_t key, int keylen){
  	return res;
 }
 //^0x02 -> complete
-void reverse_complement(const char * src, char * dest, int length)
+inline void reverse_complement(const char * src, char * dest, int length)
 {
   char table[4] = {'T','G','A','C'};
   for ( int i = 0; i < length; i++ )

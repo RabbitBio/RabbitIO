@@ -18,15 +18,31 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "-O3 -g -ffast-math ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(io)
+
+install(FILES "io/Buffer.h"  "io/DataPool.h"   "io/FastxChunk.h"   "io/Formater.h"  "io/Reference.h"  "io/utils.h" "io/Common.h"  "io/DataQueue.h"  "io/FastxStream.h"  "io/Globals.h"   "io/util.h"
+  DESTINATION include
+  )
 #message(${SOURCE_LIST})
 #include_directories(./src)
 
-add_executable (testcount TestCount.cpp)
+add_executable (testcount_se TestCount_se.cpp) #se fastq 
+add_executable (testcount_pe TestCount.cpp) #se fastq 
+add_executable (testcount_fa TestCount_fa.cpp) #se fastq 
+add_executable (rabbitstat RabbitStat.cpp) #se fastq 
 add_executable (test Examples.cpp)
 #add_executable (RabbitIO ${SOURCE_LIST})
 
 target_link_libraries(test z)
 target_link_libraries(test io_lib)
 
-target_link_libraries(testcount z)
-target_link_libraries(testcount io_lib)
+target_link_libraries(testcount_se z)
+target_link_libraries(testcount_se io_lib)
+
+target_link_libraries(testcount_pe z)
+target_link_libraries(testcount_pe io_lib)
+
+target_link_libraries(testcount_fa z)
+target_link_libraries(testcount_fa io_lib)
+
+target_link_libraries(rabbitstat z)
+target_link_libraries(rabbitstat io_lib)
