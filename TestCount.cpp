@@ -2,7 +2,7 @@
 #include "io/FastxChunk.h"
 #include <string>
 #include <iostream>
-#include "cmdparser/CLI11.hpp"
+#include "thirdparty/CLI11.hpp"
 #include "io/DataQueue.h"
 #include <thread>
 #include "io/Formater.h"
@@ -87,9 +87,9 @@ void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &
 }
 
 int main(int argc, char **argv) {
-  std::string file1 = "/home/data/haoz/FD/bigr_1.fq";
-  std::string file2 = "/home/data/haoz/FD/bigr_2.fq";
-  int th = 20;  // thread number
+  std::string file1 = "/home/old_home/haoz/ncbi/public/sra/mashscreen_test/ERR1711677_1.fastq";
+  std::string file2 = "/home/old_home/haoz/ncbi/public/sra/mashscreen_test/ERR1711677_2.fastq";
+  int th = std::stoi(argv[1]);  // thread number
   rabbit::fq::FastqDataPool *fastqPool = new rabbit::fq::FastqDataPool(256, 1 << 22);
   FqChunkQueue queue1(128, 1);
   std::thread producer(producer_pe_fastq_task, file1, file2, fastqPool, std::ref(queue1));
@@ -118,3 +118,23 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
+// pcmode(){
+//   rabbit::fq::FastqDataPool *fastqPool = new rabbit::fq::FastqDataPool(256, 1 << 22);
+//   FqChunkQueue queue1(128, 1);
+//   std::thread producer(producer_pe_fastq_task, file1, file2, fastqPool, std::ref(queue1));
+//   std::thread **threads = new std::thread *[th];
+// 	read_chunks();
+// 	Counter* counters[th];
+//   for (int t = 0; t < th; t++) {
+// 		counters[t] = new Counter{0,0,0,0};
+//     threads[t] = new std::thread(std::bind(consumer_pe_fastq_task, fastqPool, std::ref(queue1), counters[t]));
+//   }
+//   producer.join();
+//   for (int t = 0; t < th; t++) {
+//     threads[t]->join();
+//   }
+// }
+// int main(){
+// 	readfile();
+// 	process
+// }

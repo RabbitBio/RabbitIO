@@ -2,7 +2,7 @@
 #include "io/FastxChunk.h"
 #include <string>
 #include <iostream>
-#include "cmdparser/CLI11.hpp"
+#include "thirdparty/CLI11.hpp"
 #include "io/DataQueue.h"
 #include <thread>
 #include "io/Formater.h"

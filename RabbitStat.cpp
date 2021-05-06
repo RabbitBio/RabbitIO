@@ -2,14 +2,14 @@
 #include "io/FastxChunk.h"
 #include <string>
 #include <iostream>
-#include "cmdparser/CLI11.hpp"
+#include "thirdparty/CLI11.hpp"
 #include "io/DataQueue.h"
 #include <thread>
 #include "io/Formater.h"
 #include <sys/time.h>
 #include <cstdint>
 #include <vector>
-#include "cmdparser/robin_hood.h"
+#include "thirdparty/robin_hood.h"
 #include <unordered_map>
 
 //typedef robin_hood::unordered_map unordered_map;
