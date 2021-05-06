@@ -25,9 +25,7 @@ install(FILES "io/Buffer.h"  "io/DataPool.h"   "io/FastxChunk.h"   "io/Formater.
 #message(${SOURCE_LIST})
 #include_directories(./src)
 
-add_executable (testcount_se TestCount_se.cpp) #se fastq 
 add_executable (testcount_pe TestCount.cpp) #se fastq 
-add_executable (testcount_fa TestCount_fa.cpp) #se fastq 
 add_executable (rabbitstat RabbitStat.cpp) #se fastq 
 add_executable (test Examples.cpp)
 #add_executable (RabbitIO ${SOURCE_LIST})
@@ -35,14 +33,8 @@ add_executable (test Examples.cpp)
 target_link_libraries(test z)
 target_link_libraries(test io_lib)
 
-target_link_libraries(testcount_se z)
-target_link_libraries(testcount_se io_lib)
-
 target_link_libraries(testcount_pe z)
 target_link_libraries(testcount_pe io_lib)
-
-target_link_libraries(testcount_fa z)
-target_link_libraries(testcount_fa io_lib)
 
 target_link_libraries(rabbitstat z)
 target_link_libraries(rabbitstat io_lib)
