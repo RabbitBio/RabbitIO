@@ -30,9 +30,9 @@ Copy `include/RabbitIO.h` to your include file, then you can use all functions i
 
 ## Case study
 
-- [RabbitTrim]()
-- [RabbitQC]()
-- [RabbitIO-MashScreen]()
+- [RabbitIO-Ktrim](https://github.com/RabbitBio/RabbitIO-Casestudy/tree/master/RabbitIO-Ktrim)
+- [RabbitIO-fastp](https://github.com/RabbitBio/RabbitIO-Casestudy/tree/master/RabbitIO-fastp)
+- [RabbitIO-Mash](https://github.com/RabbitBio/RabbitIO-Casestudy/tree/master/RabbitIO-Mash)
 
 ## Runing Example in main.cpp and TestCount.cpp
 
