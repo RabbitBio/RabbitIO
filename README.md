@@ -1,6 +1,6 @@
 ![RabbitIO](rabbitio.png)
 
-# RabbitIO: A Efficient and Easy-to-Use I/O Framework for Biological Sequence Data
+# RabbitIO: an efficient I/O framework for sequencing data on modern multi-core platforms
 
 ## Installation
 ### Dependency
@@ -9,14 +9,11 @@
 ### Using Cmake (recommend)
 Copy folder io to your program, and then
 you can integrate RabbitIO in your `CMakeLists.txt`:
-```
+```cmake
 AUX_SOURCE_DIRECTORY(. SOURCE_LIST)
 ADD_LIBRARY(io_lib ${SOURCE_LIST})
 TARGET_LINK_LIBRAIES(io_lib z)
 ```
-### Header-only （TODO）
-Copy `include/RabbitIO.h` to your include file, then you can use all functions in RabbitIO.
-
 ## Highlight
  + RabbitIO highly support multi-core paltform
  + RabbitIO efficiency processing FASTQ/FASTA files
@@ -165,11 +162,7 @@ int test_fasta(int argc, char** argv){
 }
 ```
 
+## Cite
 
-## TODO
+RabbitIO paper is under review now.
 
-- [ ] Is it possable to make RabbitIO header only??
-- [ ] Add doxygen site
-- [X] MacOS support ??
-- [ ] support sam/bam file process
-- [ ] support vcf file process
