@@ -85,7 +85,7 @@ string getLine(FastaDataChunk *&chunk, uint64 &pos) {
  * @return Total number of Reference instance in vector refs.
  */
 int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
-	auto & tmp = fachunk.chunk;
+	auto tmp = fachunk.chunk;
 	Reference *current = NULL; 
 	do{
 		uint64 pos = 0;
