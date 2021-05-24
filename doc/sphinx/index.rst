@@ -13,7 +13,7 @@ RabbitIO --- An efficient IO framework for biological sequence files.
 
 Publication
 ------------
-RabbitSketch paper is under review.
+RabbitIO paper is under review.
 
 .. .. toctree::
    :maxdepth: 1
@@ -27,6 +27,8 @@ Documentation
 .. toctree::
    :maxdepth: 2
     
+   API/tutorial
+   API/casestudy
    API/api
 
 .. install

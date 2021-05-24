@@ -2,14 +2,29 @@ API Reference
 ===================
 
 
-Buffer
+FastxChunk
 ----------
 
-.. doxygenstruct:: rabbit::core::DataChunk
+.. doxygenstruct:: rabbit::fa::FastaChunk
     :members:
 
-.. doxygenclass:: rabbit::core::Buffer
+.. doxygenstruct:: rabbit::fq::FastqChunk
     :members:
+
+.. doxygenstruct:: rabbit::fq::FastqPairChunk
+    :members:
+
+.. doxygenclass:: rabbit::fa::FastaFileReader
+    :members:
+
+.. doxygenclass:: rabbit::fq::FastqFileReader
+    :members:
+
+ChunkFormater
+-------------
+
+.. doxygenfile:: Formater.cpp
+  :project: RabbitIO
 
 Sequencing data
 ---------------
@@ -37,26 +52,12 @@ DataPool
 DataQueue
 ----------
 
-FastxChunk
+Buffer
 ----------
 
-.. doxygenstruct:: rabbit::fa::FastaChunk
+.. doxygenstruct:: rabbit::core::DataChunk
     :members:
 
-.. doxygenstruct:: rabbit::fq::FastqChunk
+.. doxygenclass:: rabbit::core::Buffer
     :members:
 
-.. doxygenstruct:: rabbit::fq::FastqPairChunk
-    :members:
-
-.. doxygenclass:: rabbit::fa::FastaFileReader
-    :members:
-
-.. doxygenclass:: rabbit::fq::FastqFileReader
-    :members:
-
-ChunkFormater
--------------
-
-.. doxygenfile:: Formater.cpp
-  :project: RabbitIO
