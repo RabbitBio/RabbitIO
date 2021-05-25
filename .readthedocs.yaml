@@ -7,4 +7,4 @@ sphinx:
 
 python:
   version: 3
-  requirements_file: doc/sphinx/requirements.txt
+  requirements: doc/sphinx/requirements.txt
