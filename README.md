@@ -31,6 +31,10 @@ TARGET_LINK_LIBRAIES(io_lib z)
 - [RabbitIO-fastp](https://github.com/RabbitBio/RabbitIO-Casestudy/tree/master/RabbitIO-fastp)
 - [RabbitIO-Mash](https://github.com/RabbitBio/RabbitIO-Casestudy/tree/master/RabbitIO-Mash)
 
+
+## Document
+Tutorial and reference documentation of RabbitIO is provided at [rabbitio-doc.readthedocs.io](https://rabbitio-doc.readthedocs.io/en/latest/index.html).
+
 ## Runing Example in main.cpp and TestCount.cpp
 
 ``` bash
