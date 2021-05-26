@@ -33,7 +33,7 @@ TARGET_LINK_LIBRAIES(io_lib z)
 
 
 ## Document
-Tutorial and reference documentation of RabbitIO is provided at [rabbitio-doc.readthedocs.io](https://rabbitio-doc.readthedocs.io/en/latest/index.html).
+Tutorial and reference documentation of RabbitIO are provided at [rabbitio-doc.readthedocs.io](https://rabbitio-doc.readthedocs.io/en/latest/index.html).
 
 ## Runing Example in main.cpp and TestCount.cpp
 
@@ -47,13 +47,13 @@ time ./test
 time ./testcount
 ```
 
-**Note:** We integtated [CLI](https://github.com/CLIUtils/CLI11) as default command line patser for user convenience
+**Note:** We integrated [CLI](https://github.com/CLIUtils/CLI11) as default command line patser.
 
 ## FASTQ data example
 
 ### Single-end data processing example
 
-1. Example of define a mult-threading task
+1. Example of defining a mult-threading task:
 
 ``` c++
 int test_fastq_se(int argc, char** argv){
@@ -91,7 +91,7 @@ int test_fastq_se(int argc, char** argv){
   return 0;
 }
 ```
-2. example of define producer and consumer task
+2. An example of defining producer and consumer tasks:
 ``` c++
 int producer_fastq_task(std::string file, rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDataQueue<rabbit::fq::FastqDataChunk> &dq){
   rabbit::fq::FastqFileReader *fqFileReader;
@@ -125,15 +125,15 @@ void consumer_fastq_task(rabbit::fq::FastqDataPool* fastqPool, rabbit::core::TDa
 
 ```
 
-### Pair-end data processing example
+### Paired-end data processing example
 
-An example of processing Pair-end sequencing data is showed in file [TestCount.cpp](./TestCount.cpp).
+An example of processing paired-end sequencing data is showed in file [TestCount.cpp](./TestCount.cpp).
 It is tested that compared to [FQReader](https://github.com/rob-p/FQFeeder), in the task of counting ATCG of pair-end data, RabbitIO is 2 times faster in 20 thread.
 
 RabbitIO is about 2G/s I/O speed now
 
 ## FASTA data example
-this is an example of reading and processing FASTA file
+This is an example of reading and processing FASTA files:
 
 - example code of using only one thread (count chunk number of input file):
 ``` c++
