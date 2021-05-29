@@ -49,6 +49,7 @@ FastaChunk *FastaFileReader::readNextChunkList() {
   dataPart->chunk = part;
   FastaDataChunk *current = part;
   bool continue_read = false;
+  dataPart->start = this->totalSeqs;
   if (ReadNextFaChunk_(dataPart->chunk, this->seqInfos, continue_read)) {
     //FastaDataChunk *current = part;
     while (continue_read) {
@@ -256,9 +257,10 @@ bool FastaFileReader::ReadNextFaChunk_(FastaDataChunk *chunk_, SeqInfos &seqInfo
     {
       if (data[0] == '>') {
         uint64 chunkEnd = 0, pos_ = 0;
-        pos_ = chunk_->size;
+        //pos_ = chunk_->size;
         while (find_next_seq_start(data, cbufSize, pos_)) {
           chunkEnd = pos_;
+          this->totalSeqs ++;
         }
         if (chunkEnd == 0) {  // means this chunk is a big one, one chunk can not contain all
           continue_read = true;
@@ -275,6 +277,7 @@ bool FastaFileReader::ReadNextFaChunk_(FastaDataChunk *chunk_, SeqInfos &seqInfo
         pos_ = chunk_->size;
         if (find_next_seq_start(data, cbufSize, pos_)) {
           chunkEnd = pos_;
+          this->totalSeqs ++;
         }
         if (chunkEnd == 0) {  // means this chunk is a big one, one chunk can not contain all
           continue_read = true;

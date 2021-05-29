@@ -86,6 +86,7 @@ string getLine(FastaDataChunk *&chunk, uint64 &pos) {
  */
 int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
 	auto tmp = fachunk.chunk;
+  uint64 chunk_seq_start = fachunk.start; 
 	Reference *current = NULL; 
 	do{
 		uint64 pos = 0;
@@ -100,14 +101,15 @@ int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
 					current->length = current->seq.length();
 					refs.push_back(*current);
 					delete current;
+          current = NULL;
 				}
 				current = new Reference();
 				int str_pos = line.find_first_of(' ');
 				current->name = line.substr(1, str_pos - 1);  // remove '>' and ' '
 				if (str_pos < line.size()) current->comment = line.substr(str_pos + 1);
-				current->gid = fachunk.start;
+				current->gid = chunk_seq_start;
 				current->seq = "";
-				fachunk.start++;
+				chunk_seq_start++;
 				
 			}else{
 				current->seq += line;
@@ -119,6 +121,8 @@ int chunkListFormat(FastaChunk &fachunk, vector<Reference> &refs) {
 	if(current){
 		current->length = current->seq.length();
 		refs.push_back(*current);
+    delete current;
+    current = NULL;
 	}
 
   return refs.size();

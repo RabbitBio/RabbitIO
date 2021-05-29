@@ -192,7 +192,7 @@ class FastaFileReader {
   uint64 mHalo;
 
  public:
-  uint64 totalSeqs;
+  uint64 totalSeqs = 0;
   uint64 gid = 0;
 
   // added form fastareader
