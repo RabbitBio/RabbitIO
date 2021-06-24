@@ -15,15 +15,8 @@ Documentation
 -------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
     
    API/tutorial
    API/casestudy
    API/api
-
-.. install
-   introduction
-   supp
-   tutorials
-   api
-
