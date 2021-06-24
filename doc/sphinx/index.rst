@@ -6,7 +6,7 @@
 
 |
 
-RabbitIO --- An efficient IO framework for biological sequence files.
+RabbitIO: an efficient I/O framework forsequencing data on modern multi-core platforms.
 =======================================================================================
 
 |
