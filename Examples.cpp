@@ -19,9 +19,9 @@ typedef int pfunc(int, char**);
 
 int count_line(rabbit::fq::FastqChunk *fqchunk) { return 1000; }
 
-int producer_pe_fastq_task(std::string file, std::string file2, rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &dq) {
+int producer_pe_fastq_task(std::string file, std::string file2, rabbit::fq::FastqDataPool &fastqPool, FqChunkQueue &dq) {
   rabbit::fq::FastqFileReader *fqFileReader;
-  fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool, file2, false);
+  fqFileReader = new rabbit::fq::FastqFileReader(file, fastqPool, file2, false);
   int n_chunks = 0;
   int line_sum = 0;
   while (true) {
@@ -39,7 +39,7 @@ int producer_pe_fastq_task(std::string file, std::string file2, rabbit::fq::Fast
   return 0;
 }
 
-void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &dq) {
+void consumer_pe_fastq_task(rabbit::fq::FastqDataPool &fastqPool, FqChunkQueue &dq) {
   long line_sum = 0;
   rabbit::int64 id = 0;
   std::vector<neoReference> data;
@@ -48,8 +48,8 @@ void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &
   while (dq.Pop(id, fqdatachunk)) {
 		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqdatachunk->left_part), data, true);
 		line_sum += rabbit::fq::chunkFormat((rabbit::fq::FastqDataChunk*)(fqdatachunk->right_part), data, true);
-    fastqPool->Release(fqdatachunk->left_part);
-    fastqPool->Release(fqdatachunk->right_part);
+    fastqPool.Release(fqdatachunk->left_part);
+    fastqPool.Release(fqdatachunk->right_part);
   }
 }
 
@@ -131,21 +131,21 @@ int producer_fasta_task(std::string file) {
 }
 
 int test_fastq_pe(int argc, char **argv) {
-  std::string file1 = "/home/data/haoz/FD/bigr_1.fq";
-  std::string file2 = "/home/data/haoz/FD/bigr_2.fq";
+  std::string file1 = "/home/old_home/haoz/ncbi/public/sra/fastv_test/SRX7918726.sra_1.fastq";
+  std::string file2 = "/home/old_home/haoz/ncbi/public/sra/fastv_test/SRX7918726.sra_2.fastq";
   int th = 20;  // thread number
-  rabbit::fq::FastqDataPool *fastqPool = new rabbit::fq::FastqDataPool(256, 1 << 22);
+  rabbit::fq::FastqDataPool fastqPool(256, 1 << 22);
   FqChunkQueue queue1(128, 1);
-  std::thread producer(producer_pe_fastq_task, file1, file2, fastqPool, std::ref(queue1));
+  std::thread producer(producer_pe_fastq_task, file1, file2, std::ref(fastqPool), std::ref(queue1));
   std::thread **threads = new std::thread *[th];
   for (int t = 0; t < th; t++) {
-    threads[t] = new std::thread(std::bind(consumer_pe_fastq_task, fastqPool, std::ref(queue1)));
+    threads[t] = new std::thread(std::bind(consumer_pe_fastq_task, std::ref(fastqPool), std::ref(queue1)));
   }
   producer.join();
   for (int t = 0; t < th; t++) {
     threads[t]->join();
   }
-  delete fastqPool;
+  //delete fastqPool;
   for (int t = 0; t < th; t++) {
     delete threads[t];
   }
@@ -208,8 +208,8 @@ inline void check_sucess(pfunc func, int argc, char** argv, std::string desc){
 
 int main(int argc, char** argv){
   check_sucess(test_fastq_pe, argc, argv, "test fastq pair end");
-  check_sucess(test_fastq_se, argc, argv, "test fastq single end");
-  check_sucess(test_fasta,    argc, argv, "test fasta process");
+  //check_sucess(test_fastq_se, argc, argv, "test fastq single end");
+  //check_sucess(test_fasta,    argc, argv, "test fasta process");
 }
 
 /*
