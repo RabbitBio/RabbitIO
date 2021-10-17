@@ -248,13 +248,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'pybind11.tex', 'pybind11 Documentation',
-   'Wenzel Jakob', 'manual'),
+  (master_doc, 'RabbitIO.tex', 'RabbioIO Documentation',
+   'Hao Zhang', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-# latex_logo = 'pybind11-logo.png'
+#latex_logo = 'rabbitio.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -278,7 +278,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'pybind11', 'pybind11 Documentation',
+    (master_doc, 'RabbitIO', 'RabbitIO Documentation',
      [author], 1)
 ]
 

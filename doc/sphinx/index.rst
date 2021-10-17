@@ -6,32 +6,17 @@
 
 |
 
-RabbitIO --- An efficient IO framework for biological sequence files.
+RabbitIO: an efficient I/O framework forsequencing data on modern multi-core platforms.
 =======================================================================================
 
 |
-
-Publication
-------------
-RabbitSketch paper is under review.
-
-.. .. toctree::
-   :maxdepth: 1
-   
-..   data
-
 
 Documentation
 -------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
     
+   API/tutorial
+   API/casestudy
    API/api
-
-.. install
-   introduction
-   supp
-   tutorials
-   api
-
