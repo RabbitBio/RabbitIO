@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(test)
+project(RabbitIO)
 #openmp
 find_package(OpenMP REQUIRED)
 if(OPENMP_FOUND)
@@ -19,11 +19,18 @@ set(CMAKE_CXX_FLAGS "-O3 -g -ffast-math ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(io)
 
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+
 install(FILES "io/Buffer.h"  "io/DataPool.h"   "io/FastxChunk.h"   "io/Formater.h"  "io/Reference.h"  "io/utils.h" "io/Common.h"  "io/DataQueue.h"  "io/FastxStream.h"  "io/Globals.h"   "io/util.h"
   DESTINATION include
   )
+install( FILES "build/io/librabbitio.a"
+  DESTINATION lib
+  )
 #message(${SOURCE_LIST})
 #include_directories(./src)
+#add_library(libio io )
 
 add_executable (testcount_pe TestCount.cpp) #se fastq 
 add_executable (rabbitstat RabbitStat.cpp) #se fastq 
@@ -31,10 +38,10 @@ add_executable (test Examples.cpp)
 #add_executable (RabbitIO ${SOURCE_LIST})
 
 target_link_libraries(test z)
-target_link_libraries(test io_lib)
+target_link_libraries(test rabbitio)
 
 target_link_libraries(testcount_pe z)
-target_link_libraries(testcount_pe io_lib)
+target_link_libraries(testcount_pe rabbitio)
 
 target_link_libraries(rabbitstat z)
-target_link_libraries(rabbitstat io_lib)
+target_link_libraries(rabbitstat rabbitio)
