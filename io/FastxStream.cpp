@@ -314,9 +314,10 @@ int64 count_line(uchar *contenx, int64 read_bytes) {
   }
   return count_n;
 }
+	
 
 void FastqFileReader::readChunk() {
-  FastqDataChunk *part = NULL;
+	FastqDataChunk *part = NULL;
 
   recordsPool.Acquire(part);
   printf("fastqio: ready to into while\n");
@@ -361,7 +362,7 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
   FastqDataPairChunk *pair = new FastqDataPairChunk;
 
   FastqDataChunk *leftPart = NULL;
-  recordsPool.Acquire(leftPart);  // song: all in one datapool
+  recordsPool.Acquire(leftPart);  
 
   FastqDataChunk *rightPart = NULL;
   recordsPool.Acquire(rightPart);
@@ -393,7 +394,7 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
     bufferSize = 0;
   }
   int64 r;
-  r = Read(data + leftPart->size, toRead);
+  r = mFqReader->Read(data + leftPart->size, toRead);
   if (r > 0) {
     if (r == toRead) {
       chunkEnd =
@@ -421,7 +422,7 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
     rightPart->size = bufferSize2;
     bufferSize2 = 0;
   }
-  r = Read2(data_right + rightPart->size, toRead);
+  r = mFqReader2->Read(data_right + rightPart->size, toRead);
   if (r > 0) {
     if (r == toRead) {
       chunkEnd_right =
@@ -445,8 +446,6 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
     int64 difference = left_line_count - right_line_count;
     if (difference > 0) {
       // move rightPart difference lines before
-      // std::cout << "difference > 0 "<< left_line_count <<" " << right_line_count << " " << difference <<std::endl;
-      //std::cout << "start: " << chunkEnd_right << std::endl;
       while (chunkEnd_right < cbufSize) {
         if (data_right[chunkEnd_right] == '\n') {
           difference--;
@@ -460,7 +459,6 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
 
     } else if (difference < 0) {
       // move leftPart difference lines before
-      //std::cout << "difference < 0 "  <<left_line_count <<" " <<right_line_count << " " << difference << std::endl;
       while (chunkEnd < cbufSize) {
         if (data[chunkEnd] == '\n') {
           difference++;
@@ -495,14 +493,14 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
 }
 
 bool FastqFileReader::ReadNextChunk_(FastqDataChunk *chunk_) {
-  if (Eof()) {
+  if (mFqReader->Eof()) {
     chunk_->size = 0;
     return false;
   }
 
   // flush the data from previous incomplete chunk
   uchar *data = chunk_->data.Pointer();
-  const uint64 cbufSize = chunk_->data.Size();
+  uint64 cbufSize = chunk_->data.Size();
   chunk_->size = 0;
   int64 toRead = cbufSize - bufferSize;
   //---------------------------------
@@ -513,15 +511,16 @@ bool FastqFileReader::ReadNextChunk_(FastqDataChunk *chunk_) {
   }
 
   // read the next chunk
-  int64 r = Read(data + chunk_->size, toRead);
-  // std::cout << "r is :" << r << std::endl;
+  int64 r = mFqReader->Read(data + chunk_->size, toRead);
+  //std::cout << "r is :" << r << std::endl;
 
   if (r > 0) {
-    if (r == toRead)  // somewhere before end
+    //if (r == toRead)  // somewhere before end
+		if(!mFqReader->Eof())
     {
-      uint64 chunkEnd = cbufSize - SwapBufferSize;  // Swapbuffersize: 1 << 13
-      // std::cout << "chunkend  cbufsize Swapbuffersize: " << chunkEnd <<" "<< cbufSize << " " << SwapBufferSize <<
-      // std::endl;
+      //uint64 chunkEnd = cbufSize - SwapBufferSize;  // Swapbuffersize: 1 << 13
+			cbufSize = r + chunk_->size;
+			uint64 chunkEnd = cbufSize - SwapBufferSize;
       chunkEnd = GetNextRecordPos_(data, chunkEnd, cbufSize);
       chunk_->size = chunkEnd - 1;
       if (usesCrlf) chunk_->size -= 1;
@@ -533,11 +532,11 @@ bool FastqFileReader::ReadNextChunk_(FastqDataChunk *chunk_) {
       chunk_->size += r - 1;  // skip the last EOF symbol
       if (usesCrlf) chunk_->size -= 1;
 
-      eof = true;
+      mFqReader->setEof();
     }
   } else {
-    eof = true;
-  }
+		mFqReader->setEof();
+	}
 
   return true;
 }
@@ -594,6 +593,52 @@ uint64 FastqFileReader::GetNextRecordPos_(uchar *data_, uint64 pos_, const uint6
   if (data_[pos_] != '+') std::cout << "core dump is pos: " << pos_ << " char: " << data_[pos_] << std::endl;
   ASSERT(data_[pos_] == '+');  // pos0 was the start of tag
   return pos0;
+}
+
+/**
+ * @brief Skip to end of line
+ * @param data_ base pointer
+ * @param pos_ start position to skip
+ * @param size_ data_ size
+ */
+void FastqFileReader::SkipToEol(uchar *data_, uint64 &pos_, const uint64 size_) {
+  ASSERT(pos_ < size_);
+
+  while (data_[pos_] != '\n' && data_[pos_] != '\r' && pos_ < size_) ++pos_;
+
+  if (data_[pos_] == '\r' && pos_ < size_) {
+    if (data_[pos_ + 1] == '\n') {
+      usesCrlf = true;
+      ++pos_;
+    }
+  }
+}
+/**
+ * @brief Skip to start of line
+ * @param data_ base pointer
+ * @param pos_ start position to skip
+ * @param size_ data_ size
+ */
+void FastqFileReader::SkipToSol(uchar *data_, uint64 &pos_, const uint64 size_) {
+  ASSERT(pos_ < size_);
+  if (data_[pos_] == '\n') {
+    --pos_;
+  }
+  if (data_[pos_] == '\r') {
+    usesCrlf = true;
+    pos_--;
+  }
+  // find next '\n' or \n\r
+  while (data_[pos_] != '\n' && data_[pos_] != '\r') {
+    --pos_;
+  }
+  if (data_[pos_] == '\n') {
+    --pos_;
+  }
+  if (data_[pos_] == '\r') {
+    usesCrlf = true;
+    pos_--;
+  }
 }
 
 }  // namespace fq
