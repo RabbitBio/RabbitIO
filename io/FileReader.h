@@ -1,10 +1,10 @@
-
 #include "Buffer.h"
 #include "FastxChunk.h"
 #include "utils.h"
 #include <iostream>
 #include <string>
 #include <zlib.h>  //support gziped files, functional but inefficient
+#include <cstring>
 #include "Reference.h"
 #include "igzip_lib.h"
 
@@ -43,12 +43,14 @@
 #define FTELL ftello64
 #define FCLOSE fclose
 #endif
+
 namespace rabbit{
 
 class FileReader{
 private:
 	static const uint32 SwapBufferSize = 1 << 20;  // the longest FASTQ sequence todate is no longer than 1Mbp.
-	static	const uint32 IGZIP_IN_BUF_SIZE = 1 << 22; // 4M gziped file onece fetch
+	static const uint32 IGZIP_IN_BUF_SIZE = 1 << 22; // 4M gziped file onece fetch
+	static const uint32 GZIP_HEADER_BYTES_REQ = 1<<16;
 public:
 	FileReader(const std::string &fileName_, bool isZipped){
     if(ends_with(fileName_, ".gz") || isZipped) {
@@ -112,20 +114,60 @@ public:
   }
 
   int64 igzip_read(FILE* zipFile, byte *memory_, size_t size_){
-  	if(mStream.avail_in == 0){
-  		mStream.next_in = mIgInbuf;
-  		mStream.avail_in = fread(mStream.next_in, 1, IGZIP_IN_BUF_SIZE, zipFile);
-  	}
-  	mStream.next_out = memory_;;
-  	mStream.avail_out = size_;;
-  	int ret = isal_inflate(&mStream);
-  	if(ret != ISAL_DECOMP_OK){
-  		cerr << "decompress error" << endl;
-  		return -1;
-  	}
-  	//cerr << "output size: " << (size_t)(mStream.next_out - memory_) << " size_: " << size_ <<  endl;
-  	assert((size_t)(mStream.next_out - memory_) <= size_);
-  	return (size_t)(mStream.next_out - memory_);
+		uint64_t offset = 0;
+		int ret = 0;
+		//do{
+			if(mStream.avail_in == 0){
+				mStream.next_in = mIgInbuf;
+				mStream.avail_in = fread(mStream.next_in, 1, IGZIP_IN_BUF_SIZE, zipFile);
+			}
+			mStream.next_out = memory_ + offset;
+			mStream.avail_out = size_ - offset;
+			//printf("before inflate, avin: %d, avout: %d\n", mStream.avail_in, mStream.avail_out);
+			if(isal_inflate(&mStream) != ISAL_DECOMP_OK){
+				cerr << "decompress error" << endl;
+				return -1;
+			}
+			//printf("after inflate, avin: %d, avout: %d\n", mStream.avail_in, mStream.avail_out);
+			//cerr << "state block finish: " << (mStream.block_state == ISAL_BLOCK_FINISH) << endl;
+			offset = (mStream.next_out - memory_);
+
+			if(mStream.block_state == ISAL_BLOCK_FINISH) {
+				if(feof(mFile) && mStream.avail_in == 0){
+					return offset;
+				}
+				// a new block begins
+				if (mStream.avail_in == 0) {
+					isal_inflate_reset(&mStream);
+					mStream.next_in = mIgInbuf;
+					mStream.avail_in = fread(mStream.next_in, 1, IGZIP_IN_BUF_SIZE, mFile);
+					//mGzipInputUsedBytes += mStream.avail_in;
+				} else if (mStream.avail_in >= GZIP_HEADER_BYTES_REQ){
+					unsigned char* old_next_in = mStream.next_in;
+					size_t old_avail_in = mStream.avail_in;
+					isal_inflate_reset(&mStream);
+					mStream.avail_in = old_avail_in;
+					mStream.next_in = old_next_in;
+				} else {
+					size_t old_avail_in = mStream.avail_in;
+					memmove(mIgInbuf, mStream.next_in, mStream.avail_in);
+					size_t readed = 0;
+					if(!feof(mFile)){
+						readed = fread(mIgInbuf + mStream.avail_in, 1, IGZIP_IN_BUF_SIZE - mStream.avail_in, mFile);
+					}
+					isal_inflate_reset(&mStream);
+					mStream.next_in = mIgInbuf;
+					mStream.avail_in = old_avail_in + readed;;
+				}
+				ret = isal_read_gzip_header(&mStream, &mIgzipHeader);
+				if (ret != ISAL_DECOMP_OK) {
+					cerr << "igzip: invalid gzip header found: " << mStream.avail_in <<  " : " << mStream.avail_out << endl;
+					exit(-1);
+				}
+			}
+			//}while(!Eof() && mStream.avail_out > 0);
+  	assert(offset <= size_);
+  	return offset;
   }
 
   int64 Read(byte *memory_, uint64 size_) {
@@ -133,6 +175,7 @@ public:
       //int64 n = gzread(mZipFile, memory_, size_);
 			//cerr << "reading " << size_ << " byes" << endl;
  			int64 n = igzip_read(mFile, memory_, size_);
+			//cerr << "read done n: " << n << " eof: " << Eof() << endl;
       if (n == -1) std::cerr << "Error to read gzip file" << std::endl;
       return n;
     } else {
@@ -140,13 +183,28 @@ public:
       return n;
     }
   }
-
+	/// True means no need to call Read() function
+	bool FinishRead(){
+		if(isZipped){
+			return Eof() && (mStream.avail_in == 0);
+		}else{
+			return Eof();
+		}
+	}
   bool Eof() const {
 		if(eof) return eof;
 		return feof(mFile);
 	}
 	void setEof(){
 		eof = true;
+	}
+
+	~FileReader(){
+		if(mIgInbuf != NULL) delete mIgInbuf;
+		if(mFile != NULL){
+			fclose(mFile);
+			mFile = NULL;
+		}
 	}
 
 private:

@@ -362,10 +362,10 @@ class FastqFileReader {
     //	delete mZipFile;
   }
 
-  bool Eof() const {
-		if(eof) return eof;
-		return feof(mFile);
-	}
+  //bool Eof() const {
+	//	if(eof) return eof;
+	//	return feof(mFile);
+	//}
 
   // added from fastxIO.h
   FastqDataChunk *readNextChunk();

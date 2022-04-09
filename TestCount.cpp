@@ -24,7 +24,7 @@ struct Counter{
 
 int producer_pe_fastq_task(std::string file, std::string file2, rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &dq) {
   rabbit::fq::FastqFileReader *fqFileReader;
-  fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool, file2, false);
+  fqFileReader = new rabbit::fq::FastqFileReader(file, *fastqPool, file2);
   int n_chunks = 0;
   int line_sum = 0;
   while (true) {
@@ -87,9 +87,10 @@ void consumer_pe_fastq_task(rabbit::fq::FastqDataPool *fastqPool, FqChunkQueue &
 }
 
 int main(int argc, char **argv) {
-  std::string file1 = "/home/old_home/haoz/ncbi/public/sra/mashscreen_test/ERR1711677_1.fastq";
-  std::string file2 = "/home/old_home/haoz/ncbi/public/sra/mashscreen_test/ERR1711677_2.fastq";
-  int th = std::stoi(argv[1]);  // thread number
+  std::string file1 = argv[1];//"/home/old_home/song/tools/fastp_dsrc/testdata/R1.fq.gz";
+	std::string file2 = argv[2];//"/home/old_home/song/tools/fastp_dsrc/testdata/R2.fq.gz";
+	
+  int th = std::stoi(argv[3]);  // thread number
   rabbit::fq::FastqDataPool *fastqPool = new rabbit::fq::FastqDataPool(256, 1 << 22);
   FqChunkQueue queue1(128, 1);
   std::thread producer(producer_pe_fastq_task, file1, file2, fastqPool, std::ref(queue1));
