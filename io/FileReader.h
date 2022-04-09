@@ -44,6 +44,12 @@
 #define FCLOSE fclose
 #endif
 
+// #if defined(USE_IGZIP)
+// #define GZIP_READ igzip_read
+// #else
+// #define GZIP_READ gzread
+// #endif
+
 namespace rabbit{
 
 class FileReader{
@@ -60,6 +66,7 @@ public:
       //  throw RioException("Can not open file to read: ");  
       //}
 			//gzrewind(mZipFile);
+#if defined(USE_IGZIP)
 			mFile = fopen(fileName_.c_str(), "rb");
 			if (mFile == NULL){
         throw RioException(
@@ -82,6 +89,10 @@ public:
 				}
 				exit(-1);
 			}
+#else
+			mZipFile = gzopen(fileName_.c_str(), "r");
+			gzrewind(mZipFile);
+#endif			
 			this->isZipped = true;
 		}else {
 			mFile = FOPEN(fileName_.c_str(), "rb");
@@ -113,6 +124,7 @@ public:
     }
   }
 
+#if	defined(USE_IGZIP)
   int64 igzip_read(FILE* zipFile, byte *memory_, size_t size_){
 		uint64_t offset = 0;
 		int ret = 0;
@@ -169,13 +181,18 @@ public:
   	assert(offset <= size_);
   	return offset;
   }
+#endif
 
   int64 Read(byte *memory_, uint64 size_) {
     if (isZipped) {
       //int64 n = gzread(mZipFile, memory_, size_);
 			//cerr << "reading " << size_ << " byes" << endl;
+ 			//int64 n = igzip_read(mFile, memory_, size_);
+#if defined(USE_IGZIP)			
  			int64 n = igzip_read(mFile, memory_, size_);
-			//cerr << "read done n: " << n << " eof: " << Eof() << endl;
+#else
+			int64 n = gzread(mZipFile, memory_, size_);
+#endif
       if (n == -1) std::cerr << "Error to read gzip file" << std::endl;
       return n;
     } else {
@@ -186,14 +203,19 @@ public:
 	/// True means no need to call Read() function
 	bool FinishRead(){
 		if(isZipped){
-			return Eof() && (mStream.avail_in == 0);
+#if defined(USE_IGZIP)			
+			return feof(mFile) && (mStream.avail_in == 0);
+#else
+			return gzeof(mZipFile);
+#endif			
 		}else{
-			return Eof();
+			return feof(mFile);
 		}
 	}
   bool Eof() const {
-		if(eof) return eof;
-		return feof(mFile);
+		return eof;
+		//if(eof) return eof;
+		//return feof(mFile);
 	}
 	void setEof(){
 		eof = true;
@@ -204,6 +226,9 @@ public:
 		if(mFile != NULL){
 			fclose(mFile);
 			mFile = NULL;
+		}
+		if(mZipFile != NULL){
+			gzclose(mZipFile);
 		}
 	}
 

@@ -13,9 +13,15 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}
 set(EXECUTABLE_OUTPUT_PATH .)
 endif()
 
+#----------IGZIP---------------#
+include_directories("/home/old_home/haoz/tools/isa-l/include") 
+link_directories("/home/old_home/haoz/tools/isa-l/lib") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_IGZIP -lisal")
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-O3 -g -ffast-math  -I/home/old_home/haoz/tools/isa-l/include -L/home/old_home/haoz/tools/isa-l/lib -lisal ${CMAKE_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "-O3 -g -ffast-math  -I/home/old_home/haoz/tools/isa-l/include -L/home/old_home/haoz/tools/isa-l/lib -lisal ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-O3 -g -ffast-math ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(io)
 
