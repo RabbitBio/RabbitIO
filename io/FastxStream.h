@@ -20,7 +20,6 @@
 #include <string>
 #include <zlib.h>  //support gziped files, functional but inefficient
 #include "Reference.h"
-#include "igzip_lib.h"
 #include "FileReader.h"
 
 #if defined(_WIN32)

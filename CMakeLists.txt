@@ -14,9 +14,11 @@ set(EXECUTABLE_OUTPUT_PATH .)
 endif()
 
 #----------IGZIP---------------#
-include_directories("/home/old_home/haoz/tools/isa-l/include") 
-link_directories("/home/old_home/haoz/tools/isa-l/lib") 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_IGZIP -lisal")
+if(DEFINED IGZIP_PREFIX)
+	include_directories(${IGZIP_PREFIX}/include) 
+	link_directories(${IGZIP_PREFIX}/lib) 
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_IGZIP -lisal")
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

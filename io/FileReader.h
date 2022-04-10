@@ -3,10 +3,14 @@
 #include "utils.h"
 #include <iostream>
 #include <string>
-#include <zlib.h>  //support gziped files, functional but inefficient
 #include <cstring>
 #include "Reference.h"
+
+#if defined(USE_IGZIP)
 #include "igzip_lib.h"
+#else
+#include <zlib.h>  //support gziped files, functional but inefficient
+#endif
 
 #if defined(_WIN32)
 #define _CRT_SECURE_NO_WARNINGS
@@ -128,7 +132,7 @@ public:
   int64 igzip_read(FILE* zipFile, byte *memory_, size_t size_){
 		uint64_t offset = 0;
 		int ret = 0;
-		//do{
+		do{
 			if(mStream.avail_in == 0){
 				mStream.next_in = mIgInbuf;
 				mStream.avail_in = fread(mStream.next_in, 1, IGZIP_IN_BUF_SIZE, zipFile);
@@ -145,6 +149,7 @@ public:
 			offset = (mStream.next_out - memory_);
 
 			if(mStream.block_state == ISAL_BLOCK_FINISH) {
+				//cerr << "a new block" << endl;
 				if(feof(mFile) && mStream.avail_in == 0){
 					return offset;
 				}
@@ -177,7 +182,7 @@ public:
 					exit(-1);
 				}
 			}
-			//}while(!Eof() && mStream.avail_out > 0);
+			}while(mStream.avail_out > 0);
   	assert(offset <= size_);
   	return offset;
   }
@@ -237,8 +242,10 @@ private:
 	gzFile mZipFile = NULL;
 	//igzip usage
 	unsigned char *mIgInbuf = NULL;
+#if defined(USE_IGZIP)	
 	isal_gzip_header mIgzipHeader;
 	inflate_state mStream;
+#endif	
 	bool isZipped = false;
 	bool eof = false;
 };
