@@ -353,8 +353,8 @@ class FastqFileReader {
 
   ~FastqFileReader() {
     // if( mFile != NULL )
-		delete mFqReader;
-		delete mFqReader2;		
+		if(mFqReader!=NULL)delete mFqReader;
+		if(mFqReader2!=NULL)delete mFqReader2;		
     // if(mFile != NULL)
     //	delete mFile;
     // if(mZipFile != NULL)
@@ -435,8 +435,8 @@ class FastqFileReader {
   FILE *mFile = NULL;
   gzFile mZipFile = NULL;
 
-	FileReader* mFqReader;
-	FileReader* mFqReader2;
+	FileReader* mFqReader=NULL;
+	FileReader* mFqReader2=NULL;
 
   // added from fastxIO.h
   FastqDataPool &recordsPool;
