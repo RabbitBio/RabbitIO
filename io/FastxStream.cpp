@@ -359,7 +359,6 @@ namespace rabbit {
           @return FastqDataPairChunk pointer if next chunk data has data, else return NULL
           */
 
-
 FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
             bool eof1 = false;
             bool eof2 = false;
@@ -385,10 +384,15 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
                 recordsPool.Release(rightPart);
                 return NULL;
             }
+            uchar *data = NULL;
+            uint64 cbufSize = 0;
+            uchar *data_right = NULL;
+            uint64 cbufSize_right = 0;
 
+          std::thread th_left([&](){
             // flush the data from previous incomplete chunk
-            uchar *data = leftPart->data.Pointer();
-            uint64 cbufSize = leftPart->data.Size();
+            data = leftPart->data.Pointer();
+            cbufSize = leftPart->data.Size();
             leftPart->size = 0;
             int64 toRead;
             toRead = cbufSize - bufferSize;
@@ -402,7 +406,7 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
             if (r > 0) {
                 if (r == toRead) {
                     chunkEnd = cbufSize - GetNxtBuffSize;
-                    chunkEnd = GetNextRecordPos_(data, chunkEnd, cbufSize);
+                    chunkEnd = this->GetNextRecordPos_(data, chunkEnd, cbufSize);
                 } else {
                     // chunkEnd = r;
                     leftPart->size += r - 1;
@@ -415,27 +419,29 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
                 eof1 = true;
                 chunkEnd = leftPart->size + 1;
                 cbufSize = leftPart->size + 1;
-                if (leftPart->size == 0) {
-                    return NULL;
-                }
+                //if (leftPart->size == 0) {
+                //    return NULL;
+                //}
             }
+          });
             //------read left chunk end------//
 
             //-----------------read right chunk---------------------//
-            uchar *data_right = rightPart->data.Pointer();
-            uint64 cbufSize_right = rightPart->data.Size();
+          std::thread th_right([&](){
+            data_right = rightPart->data.Pointer();
+            cbufSize_right = rightPart->data.Size();
             rightPart->size = 0;
-            toRead = cbufSize_right - bufferSize2;
+            int64 toRead = cbufSize_right - bufferSize2;
             if (bufferSize2 > 0) {
                 std::copy(swapBuffer2.Pointer(), swapBuffer2.Pointer() + bufferSize2, data_right);
                 rightPart->size = bufferSize2;
                 bufferSize2 = 0;
             }
-            r = mFqReader2->Read(data_right + rightPart->size, toRead);
+            int64 r = mFqReader2->Read(data_right + rightPart->size, toRead);
             if (r > 0) {
                 if (r == toRead) {
                     chunkEnd_right = cbufSize_right - GetNxtBuffSize;
-                    chunkEnd_right = GetNextRecordPos_(data_right, chunkEnd_right, cbufSize_right);
+                    chunkEnd_right = this->GetNextRecordPos_(data_right, chunkEnd_right, cbufSize_right);
                 } else {
                     // chunkEnd_right += r;
                     rightPart->size += r - 1;
@@ -448,10 +454,13 @@ FastqDataPairChunk *FastqFileReader::readNextPairChunk() {
                 eof2 = true;
                 chunkEnd_right = rightPart->size + 1;
                 cbufSize_right = rightPart->size + 1;
-                if (rightPart->size == 0) {
-                    return NULL;
-                }
+                //if (rightPart->size == 0) {
+                //    return NULL;
+                //}
             }
+          });
+          th_left.join();
+          th_right.join();
             //--------------read right chunk end---------------------//
             if (eof1 && eof2)eof = true;
             if (!eof) {
